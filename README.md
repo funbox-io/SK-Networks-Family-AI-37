@@ -8,7 +8,7 @@
 | ⏰ **교육시간** | 주중 09:00 ~ 18:00 (1일 8시간) |
 | 📈 **기록 진행률** | `░░░░░░░░░░░░░░░░░░░░` **0 / 120일 (0%)** |
 | 🌐 **웹으로 보기** | [https://funbox-io.github.io/SK-Networks-Family-AI-37/](https://funbox-io.github.io/SK-Networks-Family-AI-37/) — 검색 · 교과목 필터 |
-| 📖 **설정 · 사용법** | [SETUP.md](SETUP.md) |
+| 📖 **설정 · 사용법** | [.setup/SETUP.md](.setup/SETUP.md) |
 
 ---
 
@@ -22,7 +22,7 @@
 | 4 | **AI 활용 애플리케이션 개발** | 화면구현 · Django Framework · 리눅스 · SW공학 · 클라우드 | 12-11 ~ 01-05 | 16일 | `░░░░░░░░░░` 0/16 |
 | 5 | **최종 프로젝트** | 다중 에이전트 기반 팀 프로젝트 · 현직자 멘토링 20시간 | 01-06 ~ 03-03 | 38일 | `░░░░░░░░░░` 0/38 |
 
-<sub>교과목별 시작·종료일은 OT 자료의 일수 배분을 순서대로 적용한 <b>예상치</b>입니다. 실제 일정이 다르면 <code>schedule.json</code> 의 <code>phases</code> 를 고쳐주세요.</sub>
+<sub>교과목별 시작·종료일은 OT 자료의 일수 배분을 순서대로 적용한 <b>예상치</b>입니다. 실제 일정이 다르면 <code>.setup/schedule.json</code> 의 <code>phases</code> 를 고쳐주세요.</sub>
 
 ## 🕘 최근 기록
 
@@ -255,11 +255,11 @@
 ## 🛠 이 저장소 쓰는 법
 
 ```bash
-python3 scripts/new_day.py              # 오늘 수업일 폴더 만들기
-python3 scripts/new_day.py 2026-09-07   # 특정 날짜로 만들기
-python3 scripts/new_day.py --next       # 아직 안 만든 가장 이른 수업일
-python3 scripts/new_day.py --weekly     # 이번 주 회고 파일 만들기
-python3 scripts/build_index.py          # 진도표만 다시 만들기
+python3 .setup/scripts/new_day.py              # 오늘 수업일 폴더 만들기
+python3 .setup/scripts/new_day.py 2026-09-14   # 특정 날짜로 만들기
+python3 .setup/scripts/new_day.py --next       # 아직 안 만든 가장 이른 수업일
+python3 .setup/scripts/new_day.py --weekly     # 이번 주 회고 파일 만들기
+python3 .setup/scripts/build_index.py          # 진도표만 다시 만들기
 ```
 
 1. `new_day.py` 로 그날 폴더를 만듭니다.
@@ -267,4 +267,4 @@ python3 scripts/build_index.py          # 진도표만 다시 만들기
 3. `days/<날짜>/README.md` 맨 위 `title:` 에 그날 주제를 한 줄 적습니다. → 진도표에 그대로 표시됩니다.
 4. push 하면 GitHub Actions 가 진도표와 웹사이트를 알아서 갱신합니다.
 
-<sub>이 문서는 <code>scripts/build_index.py</code> 가 자동으로 만듭니다. 직접 고치지 마세요. (마지막 갱신 2026-09-05)</sub>
+<sub>이 문서는 <code>.setup/scripts/build_index.py</code> 가 자동으로 만듭니다. 직접 고치지 마세요. (마지막 갱신 2026-09-05)</sub>
