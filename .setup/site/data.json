@@ -64,8 +64,15 @@
       "week": 1,
       "phase": "프로그래밍과 데이터 기초",
       "phaseKey": "basics",
-      "title": "개강 · 오리엔테이션",
-      "tags": [],
+      "title": "개강 · 오리엔테이션 · 파이썬 기초",
+      "tags": [
+        "python",
+        "print",
+        "f-string",
+        "자료형",
+        "연산자",
+        "리스트"
+      ],
       "lecture": 0,
       "review": 1,
       "exists": true
