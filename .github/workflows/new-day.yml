@@ -1,0 +1,59 @@
+name: 수업일 폴더 자동 생성
+
+on:
+  schedule:
+    # 매일 23:00 UTC = 다음날 08:00 KST (월~금 아침)
+    - cron: "0 23 * * 0-4"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  create:
+    runs-on: ubuntu-latest
+    env:
+      TZ: Asia/Seoul
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 오늘 수업일 폴더 만들기 (공휴일이면 건너뜀)
+        run: |
+          python3 scripts/new_day.py \
+            || echo "오늘은 수업일이 아닙니다 — 건너뜁니다."
+
+      - name: 바뀐 게 있으면 커밋
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --staged --quiet; then
+            echo "변경 사항 없음"
+          else
+            git commit -m "chore: 수업일 폴더 자동 생성 [skip ci]"
+            git push
+          fi
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+
+  deploy:
+    needs: create
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
