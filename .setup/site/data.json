@@ -7,7 +7,7 @@
   "dailyHours": "주중 09:00 ~ 18:00 (1일 8시간)",
   "generated": "2026-09-05",
   "total": 120,
-  "done": 0,
+  "done": 1,
   "passed": 1,
   "phases": [
     {
@@ -67,7 +67,7 @@
       "title": "개강 · 오리엔테이션",
       "tags": [],
       "lecture": 0,
-      "review": 0,
+      "review": 1,
       "exists": true
     },
     {
