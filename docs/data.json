@@ -64,11 +64,11 @@
       "week": 1,
       "phase": "프로그래밍과 데이터 기초",
       "phaseKey": "basics",
-      "title": "",
+      "title": "개강 · 오리엔테이션",
       "tags": [],
       "lecture": 0,
       "review": 0,
-      "exists": false
+      "exists": true
     },
     {
       "no": 2,
