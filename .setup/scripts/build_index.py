@@ -55,18 +55,6 @@ def build():
     A("")
     A("---\n")
 
-    # ── 커리큘럼 ────────────────────────────────
-    A("## 🗂 커리큘럼\n")
-    A("| # | 교과목 | 주요 내용 | 기간 | 일수 | 기록 |")
-    A("|:-:|:--|:--|:--|:-:|:--|")
-    for i, p in enumerate(sched["phases"], 1):
-        pdone = sum(1 for r in rows if r["phaseKey"] == p["key"] and (r["lecture"] or r["review"]))
-        A(f"| {i} | **{p['name']}** | {p['topics']} | {p['startDate'][5:]} ~ {p['endDate'][5:]} "
-          f"| {p['days']}일 | `{bar(pdone, p['days'], 10)}` {pdone}/{p['days']} |")
-    A("")
-    A("<sub>교과목별 시작·종료일은 OT 자료의 일수 배분을 순서대로 적용한 <b>예상치</b>입니다. "
-      "실제 일정이 다르면 <code>.setup/schedule.json</code> 의 <code>phases</code> 를 고쳐주세요.</sub>\n")
-
     # ── 최근 기록 ───────────────────────────────
     recent = [r for r in reversed(rows) if r["exists"]][:5]
     if recent:
@@ -79,8 +67,11 @@ def build():
     # ── 진도표 ─────────────────────────────────
     A("---\n")
     A("## 📅 진도표\n")
-    A("각 날짜를 누르면 그날의 **수업 자료**와 **복습 자료**로 바로 갈 수 있습니다. "
+    A("각 날짜를 누르면 그날의 **수업 자료**와 **복습 자료**로 바로 갑니다. "
       "📄 = 수업 자료 개수, 📝 = 복습 자료 개수\n")
+    A("<sub>교과목 구분과 기간은 OT 자료의 일수 배분(14 / 23 / 29 / 16 / 38일)을 순서대로 적용한 "
+      "<b>예상치</b>입니다. 실제 일정이 다르면 <code>.setup/schedule.json</code> 의 "
+      "<code>phases</code> 를 고쳐주세요.</sub>\n")
 
     cur_key = next((r["phaseKey"] for r in rows if r["date"] >= today), rows[-1]["phaseKey"])
     for p in sched["phases"]:
