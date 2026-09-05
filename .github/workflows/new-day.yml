@@ -28,7 +28,7 @@ jobs:
 
       - name: 오늘 수업일 폴더 만들기 (공휴일이면 건너뜀)
         run: |
-          python3 scripts/new_day.py \
+          python3 .setup/scripts/new_day.py \
             || echo "오늘은 수업일이 아닙니다 — 건너뜁니다."
 
       - name: 바뀐 게 있으면 커밋
@@ -46,7 +46,7 @@ jobs:
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: docs
+          path: .setup/site
 
   deploy:
     needs: create

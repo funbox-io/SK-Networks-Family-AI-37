@@ -24,20 +24,20 @@ jobs:
           python-version: "3.12"
 
       - name: 진도표 다시 만들기
-        run: python3 scripts/build_index.py
+        run: python3 .setup/scripts/build_index.py
 
       - name: 바뀐 게 있으면 커밋
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add README.md docs/data.json
+          git add README.md .setup/site/data.json
           git diff --staged --quiet || git commit -m "chore: 진도표 자동 갱신 [skip ci]"
           git push
 
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: docs
+          path: .setup/site
 
   deploy:
     needs: build
