@@ -84,8 +84,18 @@
       "week": 2,
       "phase": "프로그래밍과 데이터 기초",
       "phaseKey": "basics",
-      "title": "",
-      "tags": [],
+      "title": "파이썬 자료형 — 리스트 · 딕셔너리 · 튜플 · 숫자형 · 문자열 · 불",
+      "tags": [
+        "python",
+        "list",
+        "dict",
+        "tuple",
+        "자료형",
+        "인덱싱",
+        "슬라이싱",
+        "연산자",
+        "bool"
+      ],
       "lecture": 1,
       "review": 0,
       "exists": true
