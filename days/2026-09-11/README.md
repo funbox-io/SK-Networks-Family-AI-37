@@ -4,191 +4,178 @@ date: 2026-09-11
 weekday: 금
 week: 2
 phase: 프로그래밍과 데이터 기초
-title: 예외 처리 · 파일 처리 실습 — try · except · finally 와 with open 직접 써 보기
-tags: python, exception, try, except, else, finally, as, NameError, ZeroDivisionError, FileNotFoundError, Exception, file, open, with, encoding, write, read, readline, readlines, raw string
+title: 클래스와 상속 — 커스텀 자료형 만들기, 그리고 라이브러리 · 모듈
+tags: python, class, object, instance, __init__, self, 속성, 메서드, 상속, super, 오버라이딩, library, package, module, random, sample, requests
 ---
 
 # Day 006 · 2026-09-11 (금)
 
 `프로그래밍과 데이터 기초` · 2주차
 
-> **한 줄 요약** — 전날 배운 예외 처리와 파일 처리를 직접 쳐 보면서, `try`/`except`/`finally` 를 쓰는 법과 `with open` 으로 파일을 만들고 읽는 법을 손에 익혔다.
+> **한 줄 요약** — 클래스로 나만의 자료형(고객 정보)을 만들고, 상속과 오버라이딩으로 VIP 고객을 확장한 뒤, 내장 모듈(`random`)과 외부 라이브러리(`requests`)를 불러 써 봤다.
 
-📂 실습 노트북 → [`lecture/python_exception_file_practice.ipynb`](./lecture/python_exception_file_practice.ipynb) (수업 필기를 실행 가능하도록 정리, 총 5장)
-
----
-
-## 1. 예외 처리
-
-`10 / 0` 처럼 실행할 수 없는 연산을 만나면 `ZeroDivisionError` 가 나면서 **그 줄에서 프로그램이 멈춘다.**
-`try` ~ `except` 로 감싸 두면 멈추지 않고 `except` 쪽 코드로 넘어간다.
-
-```python
-def divide_ten(number):
-    output = 10 / number
-    return output
-
-print("정상 호출 :", divide_ten(2))
-
-try:
-    print("0 호출 :", divide_ten(0))
-except ZeroDivisionError as e:
-    print("0 호출 실패 :", e)
-
-print("프로그램은 계속 실행됩니다.")
-```
-
-### 반복문 안에서 예외 처리하기
-
-`range(0, 10)` 은 **0부터** 시작하므로 첫 회차에서 `10 / 0` 이 되어 에러가 난다.
-반복문 안에 `try` 를 두면 **그 회차만 건너뛰고 반복은 계속된다.**
-
-```python
-for loop in range(0, 10):
-    try:
-        result = 10 / loop          # loop 가 0일 때만 에러
-    except ZeroDivisionError:
-        print(f"{loop} : 0으로 나눌 수 없습니다.")
-    else:
-        print(f"{loop} : 10 / {loop} = {result}")
-```
-
-### `if / else` 로도 같은 일을 할 수 있다
-
-예외 처리는 조건문과 비슷한 구석이 있다.
-**미리 걸러낼 수 있는 조건**(0인지 확인)은 `if` 로, **미리 알 수 없는 상황**은 `try` 로 처리한다.
-
-```python
-for num in range(0, 10):
-    if num == 0:
-        print(f"{num} : 0으로 나눌 수 없습니다.")
-    else:
-        print(f"{num} : 10 / {num} = {10 / num}")
-```
+📂 실습 노트북 → [`lecture/python_class_inheritance_library.ipynb`](./lecture/python_class_inheritance_library.ipynb) (수업 필기를 실행 가능하도록 정리, 총 5장)
 
 ---
 
-## 2. 명시적 예외 처리
+## 1. 클래스(Class)와 객체(Object)
 
-`except` 뒤에 에러 이름을 적으면 **그 에러만** 잡는다.
+클래스는 **나만의 커스텀 자료형**이다.
+`int` `str` `list` 처럼 파이썬이 미리 만들어 둔 자료형이 있듯이, 내가 다루려는 대상(고객, 상품, 학생 …)을 직접 자료형으로 정의하는 것이다.
+
+| 용어 | 뜻 |
+|------|-----|
+| **클래스(class)** | 설계도. 어떤 데이터와 기능을 가질지 정의한다 |
+| **객체(object) · 인스턴스(instance)** | 설계도로 실제로 찍어낸 것 |
+| **속성(attribute)** | 객체가 가지고 있는 **데이터** (`self.name`) |
+| **메서드(method)** | 객체가 할 수 있는 **기능** (`purchase()`) |
+| **생성자 `__init__()`** | 객체를 만들 때 **자동으로 한 번** 실행되는 초기화 함수 |
+| **`self`** | 만들어진 **그 객체 자신**. 모든 메서드의 첫 번째 매개변수 |
+
+이름 규칙 — **클래스명은 대문자로 시작**(`Customer`), **함수·메서드명은 소문자**(`purchase`).
 
 ```python
-name = "진호"
+class Customer:
+    # 생성자 : 객체를 만들 때 자동으로 실행된다
+    def __init__(self, name, age, sex):
+        self.name = name      # 넘겨받은 값을 객체의 속성으로 저장
+        self.age = age
+        self.sex = sex
 
-print(f"나라를 구하는 이름 : {name}")
-
-try:
-    print(f"두 번째 이름 : {second_name}")   # 정의한 적 없는 변수
-except NameError as e:
-    print("NameError :", e)
+    # 인스턴스 메서드 : 첫 번째 매개변수는 항상 self
+    def purchase(self, price, product_name):
+        print(f"[{self.name}] 고객님이 {price:,}원 상당의 {product_name}를 구매하셨습니다.")
 ```
 
-### 에러 여러 개를 한 번에 처리하기
+### 객체 생성과 메서드 호출
+
+`객체 = 클래스이름(값1, 값2, ...)` 형태로 만든다. 이때 넘긴 값이 `__init__` 의 매개변수로 들어간다.
 
 ```python
-except (ZeroDivisionError, ValueError) as e:   # 1) 괄호로 묶어 튜플로
-    ...
+obj1 = Customer(name='문진호', age=20, sex='남성')   # 키워드 인수 -> 순서 바꿔도 됨
+obj2 = Customer('지현', 25, '여성')                  # 순서대로 넘겨도 됨
 
-except ZeroDivisionError as e:                 # 2) except 절을 나눠서
-    ...
-except ValueError as e:
-    ...
+print(obj1.name)                     # 속성 꺼내기
+obj1.purchase(20000, "아이패드")       # 메서드 호출
+print(type(obj1))                    # <class 'Customer'>
 ```
 
-> ⚠️ `as` 는 **한 번만** 쓴다. `except A as B as :` 같은 문법은 없다.
-> 그리고 `as e` 로 받은 `e` 는 **그 `except` 블록 안에서만** 살아 있다. `finally` 에서 쓰면 `NameError` 가 난다.
+> ⚠️ `Customer()` 처럼 값을 빠뜨리면 **TypeError**. `__init__` 이 `name, age, sex` 세 개를 요구한다.
+
+### 사실 내장 자료형도 클래스다
+
+필기에 적은 `[]` 와 `list()` 가 같다는 말이 바로 그 얘기다. `list` 는 파이썬이 미리 만들어 둔 **클래스**이고, `list()` 는 그 클래스로 객체를 만드는 것이다.
 
 ```python
-for num in range(0, 3):
-    try:
-        output = 10 / num
-    except (ZeroDivisionError, ValueError) as e:
-        print(f"{num} : 에러 발생 -", e)
-    else:
-        print(f"{num} : 결과 {output}")
-    finally:
-        print(f"{num} : 처리 완료")      # 에러가 있든 없든 항상 실행
+print([] == list())          # True
+
+list(10, 20, 30)             # TypeError! 값 여러 개가 아니라
+list([10, 20, 30])           # 반복 가능한 것 하나를 받는다
 ```
 
 ---
 
-## 3. 포괄적 예외 처리
+## 2. 상속(Inheritance)
 
-에러 이름을 **튜플로 묶어** 한 번에 잡거나, `Exception` 으로 전부 잡는다.
+이미 만든 클래스를 **그대로 물려받아** 새 클래스를 만드는 것이다.
+
+| 용어 | 뜻 |
+|------|-----|
+| **부모 클래스 (Super Class)** | 물려주는 쪽 |
+| **자식 클래스 (Sub Class)** | 물려받는 쪽 |
+
+- **코드 재사용성** — 부모 코드를 다시 쓰지 않아도 된다
+- **유지 보수** — 공통 기능은 부모 **한 곳만** 고치면 된다
+- **확장성** — 기존 코드를 두고 필요한 것만 추가한다
+- 물려받는 방향은 **부모 → 자식** 한쪽뿐이다. 자식이 부모에게 줄 수는 없다
 
 ```python
-error_types = (FileNotFoundError, NameError)
+class VIPCustomer(Customer):        # 괄호 안에 부모 클래스를 적는다
+    def __init__(self, name, age, sex, discount_rate=0.1):
+        super().__init__(name, age, sex)     # 부모의 __init__ 실행 (공통 속성)
+        self.discount_rate = discount_rate   # 자식만 갖는 속성 추가
 
-try:
-    print("pass :", name)
-    print("없는 변수 :", king_name)       # NameError
-except error_types as e:
-    print("잡힌 에러 :", type(e).__name__, "-", e)
+    # 메서드 오버라이딩 : 부모와 이름·매개변수를 맞춰야 바꿔치기가 된다
+    def purchase(self, price, product_name):
+        discount_price = int(price * (1 - self.discount_rate))
+        print(f"[VIP] [{self.name}] 고객님이 "
+              f"[{self.discount_rate * 100:.0f}]% 할인받아 "
+              f"{discount_price:,}원에 {product_name}를 구매하셨습니다.")
 ```
+
+- `super().__init__(...)` — 부모의 생성자를 불러 공통 속성을 그대로 초기화한다
+- **메서드 오버라이딩** — 부모에게 물려받은 메서드를 **같은 이름으로 다시 정의**해 바꿔 쓰는 것
 
 ```python
-try:
-    open("없는파일.txt", "r", encoding="utf-8")
-except Exception as e:                     # 안전망
-    print("모든 에러 잡기 :", type(e).__name__, "-", e)
-```
+vip_data = VIPCustomer("jinho", 30, "male", discount_rate=0.1)
 
-> ⚠️ 변수 이름을 `tuple` 로 쓰면 내장 함수 `tuple()` 을 덮어쓰게 되므로 피한다.
+print(vip_data.name)                  # 부모에게서 물려받은 속성
+vip_data.purchase(20000, "아이패드")    # 오버라이딩한 메서드가 대신 실행된다
+# [VIP] [jinho] 고객님이 [10]% 할인받아 18,000원에 아이패드를 구매하셨습니다.
+```
 
 ---
 
-## 4. 파일 처리
+## 3. 라이브러리 · 패키지 · 모듈
 
-### 경로 쓰는 법
+셋은 **크기 순서**로 이해하면 쉽다.
 
-윈도우 경로의 역슬래시는 escape 문자로 해석된다. `"C:\Users\..."` 는 `\U` 때문에 **SyntaxError** 가 나므로 아래 셋 중 하나로 쓴다.
+| 용어 | 단위 | 예 |
+|------|------|-----|
+| **모듈(module)** | 파이썬 파일 하나 (`.py`) | `random`, `os` |
+| **패키지(package)** | 모듈 여러 개를 담은 폴더 | `urllib`, `matplotlib.pyplot` |
+| **라이브러리(library)** | 패키지·모듈을 묶어 배포하는 단위 | `requests`, `pandas` |
+
+- **내장(built-in)** — 파이썬을 깔면 이미 들어 있다 (`random`, `os`, `datetime`)
+- **외부(external)** — `pip install` 로 따로 설치해야 한다 (`requests`, `pandas`)
 
 ```python
-path = r"C:\Users\Jinho\miniconda3\work\테스트.txt"    # r 을 붙이거나
-path = "C:/Users/Jinho/miniconda3/work/테스트.txt"     # / 를 쓰거나
-path = "C:\\Users\\Jinho\\miniconda3\\work\\테스트.txt" # \\ 로 두 번 쓰거나
+import random                  # 모듈 전체 -> random.sample(...) 처럼 모듈명을 붙여 쓴다
+from random import sample      # 함수 하나만 -> sample(...) 로 바로 쓴다
 ```
 
-### `with` 로 쓰기
+| 분야 | 대표 라이브러리 |
+|------|-----------|
+| 시각화 | `matplotlib` `seaborn` `plotly` |
+| 데이터 분석 | `pandas` |
+| 웹 요청 | `requests` |
 
-`with open(...) as f:` 를 쓰면 블록이 끝날 때 **자동으로 닫힌다.** 한글이 깨지지 않도록 `encoding="utf-8"` 을 붙인다.
+### 내장 모듈 `random` — 로또 번호 뽑기
+
+`sample(대상, 개수)` 는 **중복 없이** 원하는 개수를 뽑아 리스트로 돌려준다.
 
 ```python
-file_path = "테스트.txt"
+from random import sample
 
-with open(file=file_path, mode='w', encoding="utf-8") as f:
-    for num in range(1, 11):
-        data = f"{num}번째 줄입니다.\n"     # 줄바꿈은 \n 을 직접 붙인다
-        f.write(data)
-# with 블록을 벗어나면 자동으로 close()
+numbers = range(1, 46)          # 1 ~ 45 (46은 포함되지 않는다)
 
-print("파일이 닫혔는가? :", f.closed)     # True
+list_data = []
+for loop in range(0, 5):        # 5줄짜리 로또 한 장
+    info = sample(numbers, 6)   # 중복 없이 6개
+    info.sort()
+    list_data.append(info)
 ```
 
-### 읽기 — `read()` / `readline()` / `readlines()`
+---
 
-| 메서드 | 결과 |
-|--------|------|
-| `read()` | 파일 전체를 **하나의 문자열**로 |
-| `readline()` | **한 줄만** 문자열로 |
-| `readlines()` | 전체를 **줄 단위 리스트**로 |
+## 4. 외부 라이브러리 `requests` — 웹 페이지 HTML 가져오기
 
-```python
-with open(file=file_path, mode='r', encoding="utf-8") as f:
-    lines = f.readlines()
+`pip install requests` 로 설치한 뒤 쓴다. `requests.get(주소)` 가 서버에 요청을 보내고, `.text` 에 응답 본문(HTML)이 들어 있다.
 
-print("줄 수 :", len(lines))
-```
-
-### 파일 처리 + 예외 처리
+| 속성 | 뜻 |
+|------|-----|
+| `.status_code` | 응답 코드 (`200` 이면 정상) |
+| `.text` | 본문을 문자열로 |
+| `.content` | 본문을 바이트로 |
 
 ```python
-def read_file(path):
-    try:
-        with open(file=path, mode='r', encoding="utf-8") as f:
-            return f.read()
-    except FileNotFoundError:
-        return f"{path} 파일이 없습니다."
+import requests
+
+url = "https://www.google.com"
+output = requests.get(url, timeout=5)
+
+print(output.status_code)      # 200
+print(output.text[:300])       # 전체를 찍으면 수만 자가 쏟아진다
 ```
 
 ---
@@ -196,26 +183,24 @@ def read_file(path):
 ## 🔁 복습
 
 **필기에서 고친 부분**
-- [x] 함수 이름 `die_tem` → `divide_ten`, 매개변수 `e` → `number` — `e` 는 보통 `except ... as e` 의 에러 객체에 쓰는 이름이라 헷갈린다
-- [x] `loop = 10/loop` → 반복 변수에 결과를 덮어쓰지 않도록 `result` 로 분리
-- [x] 성공했을 때 `print("Error")` 가 찍히던 것 — 성공은 `else`, 실패는 `except`
-- [x] `except:` (전부 잡기) → `except ZeroDivisionError:` (무슨 에러인지 분명하게)
-- [x] `NameError` 예제 — 변수를 정의해 두고 "없는 변수 호출"이라 적어 실제로는 에러가 안 났던 것
-- [x] `except ZeroDivisionError as FileNotFoundError as :` → `except (ZeroDivisionError, ValueError) as e:`
-- [x] `finally` 안의 `print(e)` — `e` 는 `except` 블록을 벗어나면 사라진다
-- [x] 변수명 `tuple` → `error_types` (내장 이름 피하기)
-- [x] `"C:\Users\..."` 경로가 `SyntaxError` 나던 것 → `r"..."` 또는 `/`
-- [x] `with open() as f` — 인자와 콜론(`:`) 누락
-- [x] `with` 블록 안의 불필요한 `f.close()` 제거
-- [x] `print("길이:", num)` — `num` 은 길이가 아니라 마지막 반복 번호. 줄 수는 `len(readlines())`
-- [x] 오타 `ouput` → `output`
+- [x] `seif` → **`self`** (오타)
+- [x] "속성: 여러 기능 종류" → 속성은 **데이터**, 기능은 **메서드**. 둘을 나눠 정리
+- [x] `test = Customer()` 는 **TypeError** — `__init__` 이 요구하는 값을 빠뜨릴 수 없다
+- [x] `list(10, 20, 30)` 은 **TypeError** — `list([10, 20, 30])` 처럼 반복 가능한 것 하나를 넘긴다
+- [x] `화장성` → **확장성**, `부모 콛드` → **부모 코드** (오타)
+- [x] 클래스명 `VIPCUStomer` → **`VIPCustomer`**, `"mele"` → `"male"` (오타)
+- [x] `vip_data = ...` 가 주석 처리된 채 `vip_data.purchase(...)` 를 불러 **NameError** 나던 것
+- [x] `self.discount_price` → **지역 변수**. 그 순간 계산해 쓰고 마는 값이라 속성으로 남길 이유가 없다
+- [x] 로또 주석 "중복 없이 6까지 숫자 선택" → 실제로는 **1~45 중 6개**. `for` 문은 **줄 수**를 정하는 것
+- [x] `print(output.text)` 로 HTML 전체를 쏟아내던 것 → **앞부분 300자만**, `status_code` 확인 추가
 
 **막혔던 부분 / 질문**
-- [ ] `else` 에 쓸 코드와 `try` 맨 끝에 둘 코드의 차이
-- [ ] `except (A, B) as e` 와 `except A` / `except B` 를 나눠 쓰는 것 중 언제 무엇을 고르는지
-- [ ] `mode='w'` 로 열면 기존 내용이 지워지는데, 이어 쓰려면 `'a'` — 실수로 `'w'` 를 쓰면 복구할 방법이 있는지
-- [ ] `encoding="utf-8"` 을 빼면 실제로 어떤 환경에서 한글이 깨지는지
-- [ ] `with` 를 중첩해서 파일 두 개를 동시에 열 수 있는지
+- [ ] `self` 를 매개변수에 적는데 호출할 때는 왜 안 넘기는지
+- [ ] `super().__init__()` 을 빼먹으면 어떻게 되는지 (부모 속성이 아예 안 생기는지)
+- [ ] 오버라이딩할 때 매개변수를 부모와 다르게 쓰면 어떤 문제가 생기는지
+- [ ] 객체 속성(`self.x`)과 메서드 안 지역 변수의 수명 차이
+- [ ] `import 모듈` 과 `from 모듈 import 함수` 중 언제 무엇을 고르는지
+- [ ] `requests.get()` 이 실패하는 경우(네트워크, 404)를 어떻게 다뤄야 하는지
 
 📂 [수업 자료 폴더](./lecture/) · [복습 자료 폴더](./review/)
 
@@ -223,7 +208,8 @@ def read_file(path):
 
 ## 🔗 참고 링크
 
-- [파이썬 공식 튜토리얼 — 에러와 예외 (`try`, `except`, `else`, `finally`)](https://docs.python.org/ko/3/tutorial/errors.html)
-- [내장 예외 목록 (`NameError`, `ZeroDivisionError`, `FileNotFoundError` 등)](https://docs.python.org/ko/3/library/exceptions.html)
-- [파이썬 공식 튜토리얼 — 파일 읽고 쓰기 (`open`, `with`)](https://docs.python.org/ko/3/tutorial/inputoutput.html#reading-and-writing-files)
-- [문자열 리터럴 — raw string (`r"..."`)](https://docs.python.org/ko/3/reference/lexical_analysis.html#string-and-bytes-literals)
+- [파이썬 공식 튜토리얼 — 클래스](https://docs.python.org/ko/3/tutorial/classes.html)
+- [파이썬 공식 튜토리얼 — 상속](https://docs.python.org/ko/3/tutorial/classes.html#inheritance)
+- [파이썬 공식 튜토리얼 — 모듈과 패키지](https://docs.python.org/ko/3/tutorial/modules.html)
+- [`random` 모듈 문서 (`sample`)](https://docs.python.org/ko/3/library/random.html#random.sample)
+- [requests 공식 문서](https://requests.readthedocs.io/en/latest/)
