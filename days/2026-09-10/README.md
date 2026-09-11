@@ -194,3 +194,4 @@ except FileNotFoundError:
 - [내장 예외 목록 (`ValueError`, `KeyError`, `FileNotFoundError` 등)](https://docs.python.org/ko/3/library/exceptions.html)
 - [파이썬 공식 튜토리얼 — 파일 읽고 쓰기 (`open`, `with`, `read`, `readline`)](https://docs.python.org/ko/3/tutorial/inputoutput.html#reading-and-writing-files)
 - [`open()` 내장 함수 문서 — 모드와 encoding](https://docs.python.org/ko/3/library/functions.html#open)
+
