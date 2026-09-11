@@ -226,3 +226,4 @@ print(attended[0] + attended[1] + attended[2])   # 출석 일수 2
 - [파이썬 공식 튜토리얼 — 자료구조 (리스트 · 튜플 · 딕셔너리)](https://docs.python.org/ko/3/tutorial/datastructures.html)
 - [내장 자료형 문서 (`dict`, `tuple`, `str`, `bool`)](https://docs.python.org/ko/3/library/stdtypes.html)
 - [문자열 메서드와 시퀀스 슬라이싱](https://docs.python.org/ko/3/library/stdtypes.html#text-sequence-type-str)
+
