@@ -213,3 +213,4 @@ print(output.text[:300])       # 전체를 찍으면 수만 자가 쏟아진다
 - [파이썬 공식 튜토리얼 — 모듈과 패키지](https://docs.python.org/ko/3/tutorial/modules.html)
 - [`random` 모듈 문서 (`sample`)](https://docs.python.org/ko/3/library/random.html#random.sample)
 - [requests 공식 문서](https://requests.readthedocs.io/en/latest/)
+
