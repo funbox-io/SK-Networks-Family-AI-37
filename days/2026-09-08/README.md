@@ -258,3 +258,4 @@ print(f"[{messy_text.strip()}]")            # 앞뒤 공백·줄바꿈 제거
 - [내장 함수 목록](https://docs.python.org/ko/3/library/functions.html)
 - [문자열 메서드 문서 (`split`, `join`, `replace`, `strip`)](https://docs.python.org/ko/3/library/stdtypes.html#string-methods)
 - [딕셔너리 메서드 문서 (`keys`, `values`, `items`, `get`)](https://docs.python.org/ko/3/library/stdtypes.html#mapping-types-dict)
+
