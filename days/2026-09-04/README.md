@@ -261,3 +261,4 @@ print("값:" + str(list_data5[0]))
 - [파이썬 공식 튜토리얼 — 자료구조(리스트)](https://docs.python.org/ko/3/tutorial/datastructures.html)
 - [f-string 서식 명세 (Format Specification Mini-Language)](https://docs.python.org/ko/3/library/string.html#format-specification-mini-language)
 - [내장 함수 목록 (`print`, `bin`, `int` 등)](https://docs.python.org/ko/3/library/functions.html)
+
