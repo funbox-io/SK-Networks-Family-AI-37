@@ -244,3 +244,4 @@ for number in numbers:
 - [문자열 메서드 문서 (`split`, `join`, `replace`, `strip`, `title`)](https://docs.python.org/ko/3/library/stdtypes.html#string-methods)
 - [딕셔너리 메서드 문서 (`keys`, `values`, `items`, `get`)](https://docs.python.org/ko/3/library/stdtypes.html#mapping-types-dict)
 - [`range` 자료형 문서](https://docs.python.org/ko/3/library/stdtypes.html#range)
+
