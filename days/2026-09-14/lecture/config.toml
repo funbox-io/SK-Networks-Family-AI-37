@@ -1,0 +1,38 @@
+# =====================================================================
+# 교재 p.141~143 : streamlit 기능 - 환경(색상, 폰트) 설정
+#
+# 저장 위치(중요 규칙)
+#   실습 폴더 최상단에 .streamlit 폴더를 만들고 그 안에 config.toml 로 저장해야
+#   Streamlit이 자동으로 디자인을 인식한다.
+#
+#   my_dashboard/
+#   ├── .streamlit/
+#   │   └── config.toml   <-- 테마 설정 파일
+#   └── app.py            <-- 테마 확인용 파이썬 코드
+#
+# 적용 테마 : 타입 A - 모던 화이트 (Modern Light Pro) / 기업용 깔끔한 스타일
+# =====================================================================
+
+[theme]
+# primaryColor : 버튼, 선택된 탭, 슬라이더 등 가장 강조되어야 하는 포인트 색상
+primaryColor = "#2563EB"            # 인디고 블루
+
+# backgroundColor : 웹 페이지 메인 화면의 기본 배경 색상
+backgroundColor = "#F8FAFC"         # 눈이 편안한 소프트 오프화이트
+
+# secondaryBackgroundColor : 사이드바, 입력 상자 영역 등의 보조 배경 색상
+secondaryBackgroundColor = "#EFF6FF"  # 연한 블루 톤 사이드바
+
+# textColor : 화면에 표시되는 기본 글자 색상
+textColor = "#1E293B"               # 시인성 높은 딥 차콜
+
+# font : 기본 글꼴 스타일 (sans serif / serif / monospace 중 선택)
+font = "sans serif"
+
+# ---------------------------------------------------------------------
+# [참고] 타입 B - 프리미엄 다크 (Premium Dark) / 데이터 분석가 선호 스타일
+#   primaryColor            = "#3B82F6"   # 밝은 블루
+#   backgroundColor         = "#0F172A"   # 딥 다크 블루
+#   secondaryBackgroundColor = "#1E293B"  # 차콜 다크 사이드바
+#   textColor               = "#F8FAFC"   # 화이트 글자
+# ---------------------------------------------------------------------
