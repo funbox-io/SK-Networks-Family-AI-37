@@ -1,0 +1,20 @@
+# 버전 B4 — 「명절의 밤」 디자인 · 전체 흰색 (가독성 개선)
+[server]
+enableStaticServing = true
+
+[theme]
+base = "light"
+primaryColor = "#D4801A"
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F3F5F9"
+textColor = "#0F172A"
+borderColor = "#DDE3EC"
+baseRadius = "12px"
+showSidebarBorder = true
+font = "Pretendard, Apple SD Gothic Neo, Malgun Gothic, sans-serif"
+
+[theme.sidebar]
+backgroundColor = "#FAFBFD"
+secondaryBackgroundColor = "#EEF2F7"
+textColor = "#0F172A"
+borderColor = "#DDE3EC"
