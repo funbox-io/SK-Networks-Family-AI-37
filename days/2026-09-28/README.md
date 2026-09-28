@@ -92,7 +92,7 @@ DB 접속 정보가 없거나 연결에 실패해도 앱이 죽지 않는다. `d
 
 | 파일 | 내용 |
 |------|------|
-| [`lecture/demo/intro.mp4`](./lecture/demo/intro.mp4) | 소개 영상 (약 1분 · 1280×720) |
+| [`lecture/demo/intro.mp4`](./lecture/demo/intro.mp4) | 소개 영상 (약 1분 · 1280×720 · 저장소 용량을 줄이려 H.264 CRF 14로 다시 인코딩, 소리는 원본 그대로) |
 | [`lecture/demo/screen.mp4`](./lecture/demo/screen.mp4) | 화면 녹화 (약 11초 · 1910×862) |
 
 ---
