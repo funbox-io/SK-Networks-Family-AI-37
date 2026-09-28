@@ -7,7 +7,7 @@
   "dailyHours": "주중 09:00 ~ 18:00 (1일 8시간)",
   "generated": "2026-09-28",
   "total": 120,
-  "done": 10,
+  "done": 11,
   "passed": 15,
   "phases": [
     {
@@ -484,9 +484,23 @@
       "week": 5,
       "phase": "데이터 분석과 머신러닝/딥러닝",
       "phaseKey": "ml",
-      "title": "",
-      "tags": [],
-      "lecture": 0,
+      "title": "명절 교통사고 데이터 대시보드 — Streamlit · MySQL · Plotly 미니 프로젝트",
+      "tags": [
+        "python",
+        "streamlit",
+        "mysql",
+        "pymysql",
+        "pandas",
+        "plotly",
+        "geojson",
+        "dashboard",
+        "데이터분석",
+        "교통사고",
+        "도로교통공단",
+        "캐싱",
+        "폴백"
+      ],
+      "lecture": 19,
       "review": 0,
       "exists": true
     },
