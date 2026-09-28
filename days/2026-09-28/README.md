@@ -90,19 +90,19 @@ DB 접속 정보가 없거나 연결에 실패해도 앱이 죽지 않는다. `d
 
 ## 5. 시연 영상
 
-### 소개 영상 · 약 1분
+> 아래 이미지를 누르면 영상이 재생됩니다. (GitHub은 README 안에서 영상을 바로 틀어 주지 않아 대표 장면을 걸어 두었습니다)
 
-<video src="https://github.com/funbox-io/SK-Networks-Family-AI-37/raw/main/days/2026-09-28/lecture/demo/intro.mp4" controls muted playsinline width="100%"></video>
+### ▶ 소개 영상 · 약 1분
 
-1280×720 · 저장소 용량을 줄이려 H.264 CRF 14로 다시 인코딩했습니다(소리는 원본 그대로).
-재생 화면이 안 보이면 [`lecture/demo/intro.mp4`](./lecture/demo/intro.mp4) 를 눌러 주세요.
+[![소개 영상 재생](./lecture/demo/intro_thumb.jpg)](./lecture/demo/intro.mp4)
 
-### 화면 녹화 · 약 11초
+대시보드 전체를 훑는 영상입니다. 1280×720 · 저장소 용량을 줄이려 H.264 CRF 14로 다시 인코딩했습니다(소리는 원본 그대로).
 
-<video src="https://github.com/funbox-io/SK-Networks-Family-AI-37/raw/main/days/2026-09-28/lecture/demo/screen.mp4" controls muted playsinline width="100%"></video>
+### ▶ 화면 녹화 · 약 11초
 
-1910×862 · 대시보드를 실제로 넘겨 보는 화면입니다.
-재생 화면이 안 보이면 [`lecture/demo/screen.mp4`](./lecture/demo/screen.mp4) 를 눌러 주세요.
+[![화면 녹화 재생](./lecture/demo/screen_thumb.jpg)](./lecture/demo/screen.mp4)
+
+보험 FAQ 화면에서 항목을 눌러 질문을 찾아보는 장면입니다. 1910×862.
 
 ---
 
