@@ -17,6 +17,29 @@ from common import DAYS, WEEKLY, TEMPLATES, WD, load_schedule  # noqa: E402
 import build_index  # noqa: E402
 
 
+# 요일별 PCCE 연습 주제 (월=0 … 금=4)
+PCCE_TOPICS = ["입출력·연산자", "조건문", "반복문", "리스트·문자열", "함수·딕셔너리"]
+
+# ADsP 제51회(2026-10-31)까지 날짜별 주제 — 시험이 끝나면 비워도 됩니다
+ADSP_TOPICS = {
+    "2026-10-12": "1과목: 데이터와 정보, DIKW, 데이터베이스 특징",
+    "2026-10-13": "1과목: 빅데이터 특징·가치·위기 요인",
+    "2026-10-14": "1과목: 데이터 사이언스, 데이터 사이언티스트 역량",
+    "2026-10-15": "2과목: 분석 기획, 분석 방법론(KDD·CRISP-DM)",
+    "2026-10-16": "2과목: 분석 과제 발굴(하향식·상향식)",
+    "2026-10-19": "3과목: 통계 기초(표본추출·척도·확률분포)",
+    "2026-10-20": "3과목: 추정과 가설검정",
+    "2026-10-21": "3과목: 회귀분석",
+    "2026-10-22": "3과목: 시계열·주성분분석·다차원척도",
+    "2026-10-23": "3과목: 분류(로지스틱·의사결정나무·앙상블)",
+    "2026-10-26": "기출: 1과목",
+    "2026-10-27": "기출: 2과목",
+    "2026-10-28": "기출: 3과목",
+    "2026-10-29": "전범위 모의고사 1회",
+    "2026-10-30": "오답만 다시 + 헷갈리는 것 요약 1장",
+}
+
+
 def make_weekly(sched, week):
     wrows = [d for d in sched["days"] if d["week"] == week]
     if not wrows:
@@ -71,7 +94,10 @@ def main():
         tpl = (TEMPLATES / "day-README.md").read_text(encoding="utf-8")
         for k, v in {"{{DAY}}": f"{info['no']:03d}", "{{DATE}}": target,
                      "{{WEEKDAY}}": WD[dt.weekday()], "{{WEEK}}": str(info["week"]),
-                     "{{PHASE}}": info["phase"]}.items():
+                     "{{PHASE}}": info["phase"],
+                     "{{PCCE_TOPIC}}": PCCE_TOPICS[dt.weekday()] if dt.weekday() < 5 else "자유",
+                     "{{ADSP_LINE}}": (f"오늘 주제: **{ADSP_TOPICS[target]}** · 5문제, 틀린 것만 내 말로 한 줄"
+                                       if target in ADSP_TOPICS else "틀린 문제만 내 말로 한 줄")}.items():
             tpl = tpl.replace(k, v)
         (folder / "README.md").write_text(tpl, encoding="utf-8")
         for sub in ("lecture", "review"):
