@@ -261,4 +261,4 @@ python3 .setup/scripts/build_index.py          # 진도표만 다시 만들기
 3. `days/<날짜>/README.md` 맨 위 `title:` 에 그날 주제를 한 줄 적습니다. → 진도표에 그대로 표시됩니다.
 4. push 하면 GitHub Actions 가 진도표와 웹사이트를 알아서 갱신합니다.
 
-<sub>이 문서는 <code>.setup/scripts/build_index.py</code> 가 자동으로 만듭니다. 직접 고치지 마세요. (마지막 갱신 2026-10-08)</sub>
+<sub>이 문서는 <code>.setup/scripts/build_index.py</code> 가 자동으로 만듭니다. 직접 고치지 마세요. (마지막 갱신 2026-10-10)</sub>
