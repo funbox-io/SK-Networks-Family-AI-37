@@ -19,7 +19,7 @@ tags: python, scikit-learn, 머신러닝, 지도학습, 회귀, 분류, Decision
 - [`lecture/random_forest.ipynb`](./lecture/random_forest.ipynb) — 앙상블 · 투표 · 배깅 · 랜덤 포레스트 분류 / 회귀 (필기 `앙상블분류실습` · `앙상불회귀실습01`)
 
 📊 실습 데이터 → [`house_price.csv`](./lecture/house_price.csv) (506행) · [`diabetes_binary_5050split_health_indicators_BRFSS2015.csv`](./lecture/diabetes_binary_5050split_health_indicators_BRFSS2015.csv) (70,692행)
-🖼️ 그림 → [`lecture/images/`](./lecture/images/) (노트북 코드로 직접 그린 그림 8장)
+🖼️ 그림 → [`lecture/images/`](./lecture/images/) — 🎬 **시뮬레이션 애니메이션(GIF) 5개** + 그림 8장 (모두 노트북 코드로 직접 만든 것)
 📖 교재 `머신러닝` p.83~101 (필기 `결정트리분류실습` 은 [Day 023](../2026-10-12/) 에서 정리한 것과 같은 내용이라 생략)
 
 ---
@@ -36,7 +36,9 @@ tags: python, scikit-learn, 머신러닝, 지도학습, 회귀, 분류, Decision
 
 리프마다 평균 하나만 내놓기 때문에 예측선이 **계단 모양**이 된다. 교재 p.86 의 데이터 10개를 그대로 넣어 보니 `X ≤ 5.5` · `squared_error = 37.89` · 왼쪽 평균 3.333 · 오른쪽 평균 11.286 으로 교재 그림과 똑같이 나왔다.
 
-![회귀 트리 계단 모양](./lecture/images/01_tree_regression_step.png)
+![회귀 트리가 자라는 과정](./lecture/images/anim_01_tree_regression_growing.gif)
+
+🎬 깊이 1 → 5 로 한 단계씩 자라며 계단이 잘게 쪼개지고, 점선(오차)이 줄어든다.
 
 ### 보스턴 집값 — `DecisionTreeRegressor`
 
@@ -68,9 +70,9 @@ rmse(y_test, dt.predict(X_test))                 # 5.41
 | `max_depth` · `max_leaf_nodes` · `max_features` | 최대 깊이 · 리프 수 · 분할 때 볼 특성 수 | **줄이기** |
 | `min_samples_split` · `min_samples_leaf` | 분할 · 리프의 최소 샘플 수 | **늘리기** |
 
-![깊이에 따른 RMSE](./lecture/images/03_boston_depth_rmse.png)
+![깊이에 따른 과대적합](./lecture/images/anim_02_depth_overfitting.gif)
 
-깊어질수록 학습용 오차는 0 으로 내려가지만 평가용은 **4.9 ~ 5.8 사이에서 들쭉날쭉**하다. 깊이 하나만 바꿔도 결과가 흔들린다.
+🎬 깊어질수록 **학습용 점(파랑)은 대각선에 딱 붙지만**(외움), **평가용 점(주황)은 그대로 흩어져** 있다. 학습용 오차는 0 으로 내려가는데 평가용은 **4.9 ~ 5.8 사이에서 들쭉날쭉** — 깊이 하나만 바꿔도 결과가 흔들린다.
 
 ---
 
@@ -81,9 +83,9 @@ rmse(y_test, dt.predict(X_test))                 # 5.41
 | **축 수직 분할** | 축에 수직으로만 잘라서, 대각선 · 곡선 경계를 **계단**으로 흉내 낸다 |
 | **높은 분산** | 학습 데이터가 조금만 바뀌어도 트리 구조 전체가 바뀐다 |
 
-![트리 불안정성과 랜덤 포레스트](./lecture/images/05_tree_instability_vs_rf.png)
+![트리 불안정성 시뮬레이션](./lecture/images/anim_03_instability.gif)
 
-진짜 경계가 대각선인 데이터 220개에서 **12개만 빼고** 다시 학습했더니 루트 질문부터 `x1 <= 5.76` → `x0 <= 5.55` 로 바뀌었다. 보스턴 데이터도 분할을 10번 바꿔 보니:
+🎬 진짜 경계가 대각선인 데이터 220개에서 **12개(×)만 매번 다르게 빼고** 8번 다시 학습했다. 단일 트리는 루트 질문부터 바뀌며 계단 경계가 **매번 크게 출렁이고**, 랜덤 포레스트는 점선 근처에서 **거의 그대로**다. 보스턴 데이터도 분할을 10번 바꿔 보니:
 
 | 평가용 RMSE (10번) | 평균 | 표준편차 |
 |---|---|---|
@@ -107,7 +109,9 @@ rmse(y_test, dt.predict(X_test))                 # 5.41
 
 ### 배깅 — 복원 추출(부트스트랩)
 
-![부트스트랩 복원 추출](./lecture/images/06_bootstrap_sampling.png)
+![부트스트랩 복원 추출 시뮬레이션](./lecture/images/anim_04_bootstrap_sampling.gif)
+
+🎬 원본에서 1장씩 뽑고 **다시 넣기** 때문에 같은 번호가 또 나온다(주황). 서브 데이터마다 빠지는 번호도 다르다.
 
 | 방식 | 행(샘플) | 열(특성) |
 |------|---------|---------|
@@ -119,6 +123,10 @@ rmse(y_test, dt.predict(X_test))                 # 5.41
 같은 개수를 복원 추출하면 한 번도 안 뽑히는 데이터가 약 **37%** 다. 트리마다 다른 데이터로 학습하니 **서로 다른 실수**를 하고, 모으면 상쇄된다.
 
 **랜덤 포레스트** = 결정 트리 + 랜덤 패치 배깅. 노드를 나눌 때도 특성 **일부**(분류는 $\sqrt{n}$ 개)만 보고 고른다.
+
+![랜덤 포레스트가 자라는 과정](./lecture/images/anim_05_forest_growing.gif)
+
+🎬 곡선 경계 데이터(`make_moons`)에서 트리를 **1 → 100 개**로 늘리며 확률 평균(소프트 투표)의 경계를 그렸다. 트리 1개는 계단 경계에 정확도 76.7%, 100개가 모이면 경계가 곡선을 따라 매끄러워지고 **91.3%** (트리 하나하나의 평균은 85.0%). 색이 진할수록 트리들이 한목소리로 투표한 곳이다.
 
 ---
 
@@ -186,6 +194,7 @@ accuracy_score(y_test, rf.predict(X_test))        # 0.7402
 - 부트스트랩을 직접 해서 빠지는 비율(약 37%) 확인
 - 숲 안의 트리 100개를 하나씩 꺼내 정확도 측정 → 평균 65.9% vs 숲 74.0%
 - 트리 개수(1 ~ 200)에 따른 정확도 변화
+- `FuncAnimation` + `to_jshtml()` 로 트리가 자라는 과정 · 숲이 자라는 과정을 노트북 안에서 재생되는 애니메이션으로 만들기
 
 **막혔던 부분 / 질문**
 - [ ] 부트스트랩에서 빠진 37% (OOB 데이터)로 평가용 없이 성능을 재는 `oob_score=True`
