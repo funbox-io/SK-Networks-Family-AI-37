@@ -7,7 +7,7 @@
   "dailyHours": "주중 09:00 ~ 18:00 (1일 8시간)",
   "generated": "2026-10-15",
   "total": 120,
-  "done": 21,
+  "done": 22,
   "passed": 26,
   "phases": [
     {
@@ -882,7 +882,7 @@
       "phaseKey": "ml",
       "title": "",
       "tags": [],
-      "lecture": 0,
+      "lecture": 4,
       "review": 0,
       "exists": true
     },
