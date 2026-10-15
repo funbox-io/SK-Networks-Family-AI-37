@@ -1,37 +1,25 @@
-# 2026-10-15 수업 실습 — 고객 이탈 예측 (로지스틱 회귀 · SVM)
+# 2026-10-15 수업 실습 — 고객 이탈 예측 (로지스틱 회귀 · SVM · 결정 트리)
 
-| 노트북 | 내용 | 데이터 |
-|---|---|---|
-| `고객이탈예측.ipynb` | 수업 원본 (SVM 부분 빈칸) | `Telco-Customer-Churn.csv` |
-| `01_고객이탈예측_LR_SVM_실습.ipynb` | 정리·개선본: 전처리 → EDA → 원-핫 인코딩 → 스케일링 → LogisticRegression · SVC 학습/평가/비교 | `Telco-Customer-Churn.csv` |
+| 파일 | 내용 |
+|---|---|
+| `고객이탈예측.ipynb` | 수업 필기 원본 |
+| [`churn_classification.ipynb`](./churn_classification.ipynb) | 정리 · 개선본 — 전처리 → EDA → 인코딩 → 로지스틱 회귀 · SVM(스케일링 전/후) · 결정 트리(깊이) → 임계값 → 모델 비교 |
+| `Telco-Customer-Churn.csv` | 실습 데이터 (7,043행 × 21열) |
+| [`images/`](./images/) | 🎬 시뮬레이션 애니메이션(GIF) 4개 + EDA · 모델 비교 그림 (노트북 코드로 직접 만든 것) |
 
 ## 실행 방법
-- CSV 파일을 노트북과 **같은 폴더**에 두고 실행 (경로: `./Telco-Customer-Churn.csv`)
-- 필요 패키지: `pandas`, `plotly`, `scikit-learn`
-- 그래프는 plotly라 GitHub 미리보기에서는 보이지 않음 → Jupyter / VS Code에서 실행
+- CSV 를 노트북과 **같은 폴더**에 두고 실행 (경로: `./Telco-Customer-Churn.csv`)
+- 필요 패키지: `pandas`, `plotly`, `matplotlib`, `scikit-learn`
+- `SAVE_GIF = False` 로 바꾸면 GIF 를 다시 만들지 않아 빨리 끝난다
+- 수업 EDA 그래프는 plotly 라 GitHub 미리보기에서는 안 보임 → 같은 내용을 `images/00_eda.png` 로도 저장
 
-## 데이터
-- Kaggle Telco Customer Churn · 7,043행 × 21열 · 정답 `Churn`(Yes/No)
-- `TotalCharges`에 공백 문자열 11건(가입 0개월 신규 고객) → 숫자 변환 후 제거 → 7,032행
-
-## 결과 요약 (`random_state=0`, 평가용 1,407건)
-| 모델 | 정확도 | 정밀도(이탈) | 재현율(이탈) | F1(이탈) |
-|---|---|---|---|---|
-| Baseline (전부 "유지" 예측) | 0.734 | – | 0 | 0 |
-| LogisticRegression | **0.808** | 0.668 | **0.554** | **0.605** |
-| SVC (rbf) | 0.797 | 0.669 | 0.471 | 0.553 |
-
-- EDA: 월 단위 계약(이탈률 42.7%) ≫ 1년(11.3%) ≫ 2년(2.8%), 가입 초기·높은 월 요금 고객의 이탈이 많음
-- 불균형 데이터(유지 73 : 이탈 27)라 정확도만으로는 부족 → 이탈 고객 재현율이 약 0.5 수준
-
-## 원본 코드 대비 수정한 부분
-- 하드코딩된 절대경로(`C:/Users/...`) → 상대경로 `./Telco-Customer-Churn.csv`
-- **비어 있던 SVM 섹션 완성** (`SVC` 생성 → 학습 → 예측 → 평가)
-- **StandardScaler 스케일링 추가** (SVM은 거리 기반이라 필수, 로지스틱 회귀 수렴 경고 해결) — 학습용으로만 `fit`
-- 정확도 외에 혼동 행렬·정밀도·재현율·F1 평가 함수 추가, 기준선(baseline) 포함 모델 비교표 추가
-- 학습용 정답 비율을 "평가용"으로 출력하던 라벨 오류 수정 → 전체/학습용/평가용 비율 비교표로 변경
-- pandas 3.x에서 문자열 컬럼이 `str` 자료형이라 `select_dtypes(include=['object'])`가 놓칠 수 있음 → `['object', 'string']`
-- `text_auto='True'`(문자열) → `text_auto=True`(불리언)
-- 같은 형태의 히스토그램 3개 → 반복문 하나로 통합
-- 공백 행이 모두 `tenure=0`인 신규 고객임을 확인하는 셀, 계약 형태별 이탈률(%) 셀, 로지스틱 회귀 계수 해석 셀 추가
-- 주석 오타(`변환활` 등) 정정, 단계별 마크다운 설명·정리(✅) 섹션 추가
+## 결과 요약 (`random_state=0`, 평가용 1,407명)
+| 모델 | 정확도 | 재현율(이탈) | F1 |
+|---|---|---|---|
+| 기준선 (전부 "유지") | 0.734 | 0 | 0 |
+| **LogisticRegression** (스케일링) | **0.808** | 0.554 | 0.605 |
+| SVC (스케일링 X — 필기 그대로) | 0.734 | 0 | 0 |
+| SVC (스케일링 O) | 0.797 | 0.471 | 0.553 |
+| DecisionTree (기본값 — 필기 그대로) | 0.719 | 0.476 | 0.474 |
+| DecisionTree (`max_depth=3`) | 0.795 | 0.390 | 0.503 |
+| LogisticRegression (임계값 0.3) | 0.772 | **0.765** | **0.641** |
