@@ -5,7 +5,7 @@ weekday: 금
 week: 7
 phase: 데이터 분석과 머신러닝/딥러닝
 title: 차원 축소(PCA) · AutoML(AutoGluon) · 비지도 학습(K-Means)
-tags: python, numpy, pandas, matplotlib, scikit-learn, autogluon, 머신러닝, 차원의저주, 차원축소, PCA, 주성분분석, explained_variance_ratio, n_components, inverse_transform, load_digits, 손글씨숫자, KNN, AutoML, AutoGluon, TabularPredictor, leaderboard, evaluate, balanced_accuracy, roc_auc, 스태킹, 비지도학습, 군집화, 클러스터링, KMeans, 유클리드거리, 중심점, inertia, SSE, 엘보우, 붓꽃, TelcoChurn
+tags: python, numpy, pandas, matplotlib, scikit-learn, autogluon, 머신러닝, 차원의저주, 차원축소, PCA, 주성분분석, explained_variance_ratio, n_components, PC3, components_, 직교, inverse_transform, load_digits, 손글씨숫자, KNN, AutoML, AutoGluon, TabularPredictor, leaderboard, evaluate, balanced_accuracy, roc_auc, 스태킹, 비지도학습, 군집화, 클러스터링, KMeans, 유클리드거리, 중심점, inertia, SSE, 엘보우, 붓꽃, TelcoChurn
 ---
 
 # Day 027 · 2026-10-16 (금)
@@ -15,12 +15,12 @@ tags: python, numpy, pandas, matplotlib, scikit-learn, autogluon, 머신러닝, 
 > **한 줄 요약** — 특성이 많을수록 데이터가 텅 빈 공간에 흩어져 **거리가 무의미해지는 차원의 저주**를, 데이터가 가장 넓게 퍼진 방향으로 투영하는 **PCA** 로 풀었다(손글씨 64차원 → **29차원으로 정보 95%**, 정확도 0.978 → 0.975). 어제 직접 만든 고객 이탈 모델을 **AutoGluon** 에 맡겼더니 5분 만에 30개 모델 + 스태킹으로 **0.803 ~ 0.814** — 잘 만든 로지스틱 회귀(0.808)와 비슷했다. 마지막으로 정답 없이 묶는 **K-Means** 로 붓꽃을 3개 그룹으로 나눴더니 품종과 **96%** 일치했다.
 
 📂 실습 노트북
-- [`lecture/pca_dimensionality_reduction.ipynb`](./lecture/pca_dimensionality_reduction.ipynb) — 차원의 저주 · PCA 원리(투영 · 분산) · 손글씨 64→2차원 · 정보 95% · 복원 · PCA+KNN (필기 `PCA실습`)
+- [`lecture/pca_dimensionality_reduction.ipynb`](./lecture/pca_dimensionality_reduction.ipynb) — 차원의 저주 · PCA 원리(투영 · 분산) · **3차원 PC1 · PC2 · PC3** · 손글씨 64→2 · 3차원 · 정보 95% · 복원 · PCA+KNN (필기 `PCA실습`)
 - [`lecture/automl_autogluon.ipynb`](./lecture/automl_autogluon.ipynb) — AutoML 개념 · `TabularPredictor` → `fit` → `leaderboard` → `evaluate` · 저장 모델 불러오기 · 어제 모델과 비교 (필기 `AutoGluon`)
 - [`lecture/kmeans_clustering.ipynb`](./lecture/kmeans_clustering.ipynb) — 비지도 학습 · K-Means 직접 구현 · `KMeans` k=2 / 3 · 정답과 비교 · 엘보우 (필기 `비지도학습_K_Means`)
 
 📊 실습 데이터 → [`iris_dataset.csv`](./lecture/iris_dataset.csv) (150행) · [`Telco-Customer-Churn.csv`](./lecture/Telco-Customer-Churn.csv) (7,043행 × 21열) · 손글씨 숫자는 `load_digits()` 내장
-🖼️ 그림 → [`lecture/images/`](./lecture/images/) — 🎬 **시뮬레이션 애니메이션(GIF) 5개** + 그림 2장
+🖼️ 그림 → [`lecture/images/`](./lecture/images/) — 🎬 **시뮬레이션 애니메이션(GIF) 7개** + 그림 2장
 📖 교재 → `머신러닝` v6 **p.115~133** (14. 차원 축소 · 15. AutoML · 16. 비지도 학습)
 
 ---
@@ -46,11 +46,32 @@ tags: python, numpy, pandas, matplotlib, scikit-learn, autogluon, 머신러닝, 
 |---|---|
 | **PC1** | 데이터의 **분산이 가장 큰** 방향 |
 | **PC2** | PC1 과 **직교**하면서 남은 분산이 가장 큰 방향 |
+| **PC3** | PC1 · PC2 **둘 다와 직교**하는 방향 (3차원에서는 남은 방향이 하나뿐 → 분산 가장 작음) |
 | 차원 축소 | 앞쪽 주성분 몇 개만 남기고 나머지(노이즈에 가까운 축)를 버린다 |
 
 ![PCA 투영 애니메이션](./lecture/images/anim_02_pca_projection.gif)
 
 🎬 투영 축을 0° → 180° 로 돌리면, 투영된 점들의 **분산이 최대가 되는 각도(41°)가 PC1** — sklearn 이 계산한 값과 같다. 축이 데이터와 엇갈릴수록 점선(잃는 정보)이 길어진다.
+
+### 3차원이면? — PC3 (세 번째 주성분)
+
+특성이 3개면 주성분도 3개. PC1 · PC2 · PC3 는 서로 90° 인 **새 좌표축 3개**(원래 x1 · x2 · x3 축을 데이터에 맞게 돌린 것)이고, **PC3 를 버린다 = PC1–PC2 평면으로 수직 투영 = 3차원 → 2차원**.
+
+![PC3 애니메이션](./lecture/images/anim_06_pca_pc3_axes.gif)
+
+🎬 납작한 접시 모양의 3차원 데이터에서 **PC1 → PC2 → PC3** 를 차례로 찾고, PC3 를 버려 점들을 평면으로 **납작하게** 만든 뒤 PC3 방향에서 내려다봤다 — 그게 2차원 PCA 그림이다.
+
+| | PC1 | PC2 | PC3 |
+|---|---|---|---|
+| 정보(분산) 비율 | **80.2%** | 18.4% | 1.4% |
+| 누적 | 80.2% | **98.6%** | 100% |
+
+```python
+pca_3 = PCA(n_components=3).fit(X_3d)
+pca_3.components_ @ pca_3.components_.T   # 단위 행렬 → 주성분끼리 내적 0 = 서로 직교
+```
+
+PC3 는 접시의 **두께** 방향(1.4%)이라 버려도 모양은 그대로 남는다. 주성분끼리 직교하므로 PC 좌표끼리는 상관관계가 0 — 같은 정보를 두 번 담지 않는다.
 
 ### 손글씨 숫자 64차원 → 2차원
 
@@ -67,6 +88,21 @@ X_data_95 = pca_95.fit_transform(X_data)          # (1797, 64) -> (1797, 29)
 
 2차원은 정보의 **28.5%** 뿐이라 0 · 4 · 6 은 갈라지지만 가운데는 겹친다 — **시각화용**.
 
+### PC3 를 하나 더 — 64차원 → 3차원
+
+![digits PC3 애니메이션](./lecture/images/anim_07_digits_pc3.gif)
+
+🎬 3차원 PCA 결과를 **위에서 내려다보면 2차원 그림과 똑같고**(PC1 · PC2), 옆으로 눕히면 높이 = PC3 가 드러나 **2 · 6 은 아래(PC3 평균 −15.8 · −13.7), 7 · 4 · 9 는 위(+12.0 · +7.9 · +7.8)** 로 갈라진다.
+
+`components_` 를 8×8 로 접어 보면 PC3 는 **오른쪽 세로줄이 + , 아래 가로줄이 −** 인 픽셀 패턴 → 오른쪽 세로획이 있는 7 · 4 · 9 는 위, 아래 획이 굵은 2 · 6 은 아래. 주성분은 원래 픽셀들을 **가중합한 새 특성**이다.
+
+| 남긴 주성분 | 보존 정보 | KNN 정확도 |
+|---|---|---|
+| PC1 · PC2 | 28.5% | 0.617 |
+| PC1 · PC2 · **PC3** | **40.3%** (+11.8%p) | **0.747** (+0.13) |
+
+PC3 를 더하면 숫자 **7 재현율 0.58 → 0.92 · 6 0.67 → 0.94 · 5 0.27 → 0.57** — 2차원에서 겹치던 숫자들이 갈라졌다.
+
 ![PCA 복원 애니메이션](./lecture/images/anim_03_pca_reconstruction.gif)
 
 🎬 주성분 k 개만 남겼다가 `inverse_transform` 으로 되돌린 이미지. **10개(74%)** 면 숫자가 보이고 **29개(95%)** 면 원본과 거의 같다.
@@ -76,6 +112,7 @@ X_data_95 = pca_95.fit_transform(X_data)          # (1797, 64) -> (1797, 29)
 | 64 (원본) | 100% | **0.978** |
 | 29 | 95% | **0.975** |
 | 10 | 74% | 0.961 |
+| 3 | 40.3% | 0.747 |
 | 2 | 28.5% | 0.617 |
 
 특성을 **절반 이하**로 줄여도 정확도는 거의 그대로. PCA 도 스케일러처럼 **학습용으로만 `fit`** (`make_pipeline`).
@@ -168,6 +205,8 @@ output3 = model3.fit_predict(wl_data)   # 꽃잎 길이 · 너비 (정답 label 
 **직접 해본 것**
 - 차원 2 → 1000 에서 가장 먼 / 가까운 거리 비율 계산 (67배 → 1.11배)
 - 2차원 데이터에서 투영 축 각도를 돌려 분산이 최대인 각도 = PC1 확인
+- 3차원 데이터로 PC1 · PC2 · PC3 와 직교 확인(내적 = 단위 행렬), PC3 를 버리면 98.6% 유지
+- 손글씨 PC3 추가 : 정보 28.5% → 40.3%, KNN 0.617 → 0.747, 숫자별 재현율 비교 · `components_` 를 8×8 로 그려 PC3 해석
 - 주성분 개수별 누적 정보 비율(50% 5개 · 80% 13개 · 90% 21개 · 95% 29개 · 99% 41개)과 `inverse_transform` 복원
 - PCA 차원별 KNN 정확도 비교 (`make_pipeline` 으로 학습용에만 fit)
 - AutoGluon 을 수업과 같은 설정으로 다시 실행 (30개 모델, 평가용 0.814) · 특성 중요도
@@ -175,7 +214,7 @@ output3 = model3.fit_predict(wl_data)   # 꽃잎 길이 · 너비 (정답 label 
 - `FuncAnimation` 으로 차원의 저주 · PCA 투영 · 복원 · K-Means 반복 · 엘보우 애니메이션
 
 **막혔던 부분 / 질문**
-- [ ] PCA 로 줄인 주성분(PC1, PC2 …)은 원래 컬럼이 섞인 값인데, 어떤 픽셀이 얼마나 섞였는지(`components_`) 해석하는 방법
+- [x] PCA 로 줄인 주성분(PC1, PC2 …)은 원래 컬럼이 섞인 값인데, 어떤 픽셀이 얼마나 섞였는지(`components_`) 해석하는 방법 → `components_[i]` 를 8×8 로 접어 그리면 된다 (PC3 = 오른쪽 세로획)
 - [ ] AutoGluon `eval_metric='f1'` 로 다시 학습하면 재현율이 얼마나 오르는지, 임계값 조정([Day 026](../2026-10-15/))과 비교
 - [ ] 엘보우가 뚜렷하지 않을 때 k 를 고르는 다른 방법 (실루엣 계수 — k=2 가 0.765 로 더 높게 나옴)
 - [ ] 다음 시간 GMM 은 K-Means 와 무엇이 다른지 (동그란 군집 vs 타원 · 확률)
