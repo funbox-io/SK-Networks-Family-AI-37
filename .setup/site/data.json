@@ -943,6 +943,9 @@
         "주성분분석",
         "explained_variance_ratio",
         "n_components",
+        "PC3",
+        "components_",
+        "직교",
         "inverse_transform",
         "load_digits",
         "손글씨숫자",
@@ -967,7 +970,7 @@
         "붓꽃",
         "TelcoChurn"
       ],
-      "lecture": 17,
+      "lecture": 19,
       "review": 0,
       "exists": true
     },
