@@ -15,7 +15,7 @@ tags: python, numpy, pandas, matplotlib, scikit-learn, 머신러닝, 모델검�
 > **한 줄 요약** — 튜닝 → 평가 → **특성 중요도로 검증**까지 분류 · 회귀를 한 번씩 끝까지 해 봤다. 고객 이탈은 `GridSearchCV` 로 `C` · `max_iter` 를 바꿔도 F1 0.60 그대로였고, **스케일링 + `class_weight='balanced'`** 가 재현율을 0.55 → **0.79**, F1 을 **0.632** 로 올렸다. 스케일링 없이 본 계수 "중요도"에서는 35위였던 **`tenure` 가 실제로는 1위**였다. 보스턴 집값은 필기의 `RandomizedSearchCV` 결과(RMSE 4.31)가 **기본값(4.07)보다 나빴는데**, 탐색 범위에 기본값 `min_samples_leaf=1` 이 빠져 있었기 때문이다.
 
 📂 실습 노트북
-- [`lecture/churn_model_evaluation.ipynb`](./lecture/churn_model_evaluation.ipynb) — 전처리 · EDA · 인코딩 · 로지스틱 회귀(수렴 경고 · 계수 해석) · `GridSearchCV` (필기 / 스케일링 + `class_weight`) · 혼동 행렬 · 내장 vs 순열 중요도 · SVM · 결정 트리 · 모델 비교 (필기 `고객이탈예측_1`)
+- [`lecture/churn_model_evaluation.ipynb`](./lecture/churn_model_evaluation.ipynb) — 전처리 · EDA · 인코딩 · 로지스틱 회귀(수렴 경고 · 계수 해석) · `GridSearchCV` (필기 / 스케일링 + `class_weight`) · 혼동 행렬 · 내장 vs 순열 중요도 · **SVM 고도화** · **결정 트리 고도화** · 모델 비교 (필기 `고객이탈예측_1`) — 모델마다 **생성 → 학습 → 예측 → 평가 → 고도화(탐색 → best → 예측 → 평가 → 특성 중요도)** 를 단계별 코드 · 주석으로
 - [`lecture/regression_model_evaluation.ipynb`](./lecture/regression_model_evaluation.ipynb) — RMSE · 결정 트리 `GridSearchCV` · `RandomizedSearchCV` (교재 p.143) · 랜덤 포레스트 `RandomizedSearchCV` (필기 / 기본값 포함) · 반복 교차 검증 · 특성 중요도 검증 (필기 `회귀 모델 성능 고도화 실습`)
 
 📊 실습 데이터 → [`Telco-Customer-Churn.csv`](./lecture/Telco-Customer-Churn.csv) (7,043행 × 21열, [데이터 설명서](../2026-10-15/lecture/)) · [`house_price.csv`](./lecture/house_price.csv) (506행 × 14열)
@@ -92,20 +92,54 @@ grid_lr2 = GridSearchCV(pipe, params2, scoring='f1', cv=5).fit(X_train, y_train)
 
 두 중요도의 **상위권이 비슷하면 → 일반화 성공**, 학습용에서 높던 특성이 순열에서 **폭락 · 음수면 → 과대적합**.
 
-- 로지스틱 회귀(스케일링) : 내장 1 · 2위 `tenure` · `TotalCharges` 가 순열에서도 1 · 2위 → **안정적**
-- 결정 트리 기본값(깊이 27, 학습 정확도 0.998) : 내장 2위 `MonthlyCharges`(0.184)가 순열에서는 **0.005**, 전자수표 결제는 **−0.005** → **과대적합된 불량 모델**. 깊이 5 로 튜닝하면 두 중요도가 맞아진다.
+- 로지스틱 회귀 고도화 : 학습용 1 ~ 4위 `tenure` · `TotalCharges` · `MonthlyCharges` · `Fiber optic` 이 순열에서도 1 ~ 4위 → **안정적**. 단 `Contract_Month-to-month` 는 순열 44위 — 과대적합이 아니라 계약 형태가 원-핫 3개 컬럼으로 **중복**돼서 하나만 섞어도 나머지로 알 수 있기 때문(순열 중요도의 한계)
+- 결정 트리 기본값(깊이 27, 학습 정확도 0.998) : 내장 2위 `MonthlyCharges`(0.184)가 순열에서는 **0.005**, 전자수표 결제는 **−0.005** → **과대적합된 불량 모델**
+- 결정 트리 고도화(깊이 7) : 상위 3개(계약 · `tenure` · Fiber)는 순열에서도 상위지만, 요금 컬럼 2개는 순열이 **음수** → 요금으로 한 분할은 아직 잡음
 
 ![특성 중요도 교차 검증 애니메이션](./lecture/images/anim_02_importance_crosscheck.gif)
 
 🎬 결정 트리 깊이 2 → 20 : 왼쪽(학습용)에서는 `TotalCharges` · `MonthlyCharges`(주황)가 점점 커지는데 오른쪽(평가용)은 따라오지 않는다 — 두 그래프가 **어긋나기 시작하는 곳이 과대적합의 신호**.
 
-필기에서 실행하지 않았던 SVM · 결정 트리도 돌려 보니 [Day 026](../2026-10-15/) 과 같았다 — **SVC (스케일링 X)** 는 전부 "유지"(정확도 0.734 = 기준선, 재현율 0), 스케일링하면 0.797.
+---
+
+## 5. SVM · 결정 트리 — 실행 + 고도화 (로지스틱 회귀와 같은 순서로)
+
+필기에는 SVM · 결정 트리 셀만 있고 실행 결과가 없었다. 로지스틱 회귀와 똑같이 **모델 생성 → 학습 → 예측 → 평가**, 이어서 **고도화(탐색 도구 생성 · 실행 → best 모델 → 검증 성능 → 평가용 예측 → 평가 → 특성 중요도)** 를 단계마다 코드 · 주석으로 채웠다.
+
+```python
+# SVM 고도화 : 스케일러 + SVC, 3 × 3 × 2 = 18가지
+grid_svc = GridSearchCV(make_pipeline(StandardScaler(), SVC()),
+                        {'svc__C': [0.1, 1, 10], 'svc__gamma': ['scale', 0.01, 0.1],
+                         'svc__class_weight': [None, 'balanced']},
+                        scoring='f1', cv=5, n_jobs=-1)              # best : C=1, gamma='scale', balanced
+
+# 결정 트리 고도화 : 스케일링 불필요, 9 × 5 × 2 = 90가지
+grid_dt = GridSearchCV(DecisionTreeClassifier(random_state=0),
+                       {'max_depth': range(2, 11), 'min_samples_leaf': [1, 5, 10, 20, 50],
+                        'class_weight': [None, 'balanced']},
+                       scoring='f1', cv=5)                          # best : 깊이 7, 리프 50, balanced
+```
+
+- **SVC (필기, 스케일링 X)** : 1,407명 **전부 "유지"** — 정확도 0.734 = 기준선, 재현율 0. 거리 계산을 `TotalCharges` 가 독차지. 스케일링하면 0.797
+- SVC 고도화 : 모든 조합에서 `balanced` > None, `gamma=0.1` 은 경계가 구불구불해져 점수 ↓. `rbf` SVM 은 계수가 없어 **순열 중요도만** — 계약 형태 · `tenure` · 인터넷 서비스가 상위(로지스틱과 같은 근거)
+- 결정 트리 기본값 : 깊이 27, 학습 0.998 → 평가 0.719 (과대적합). 고도화하면 학습 0.769 · 평가 0.750 으로 차이가 줄었다
+
+| 평가용 1,407명 | 정확도 | 재현율(이탈) | 정밀도 | F1 |
+|---|---|---|---|---|
+| **로지스틱 회귀 고도화** (스케일링 + `balanced`) | 0.754 | **0.794** | 0.525 | **0.632** |
+| 결정 트리 고도화 (`balanced`, 깊이 7, 리프 50) | 0.750 | 0.783 | 0.520 | 0.625 |
+| SVC 고도화 (스케일링 + `balanced`, `C=1`) | 0.746 | 0.762 | 0.514 | 0.614 |
+| 로지스틱 회귀 (스케일링, 기본값) | **0.808** | 0.553 | **0.668** | 0.605 |
+| 결정 트리 (필기, 기본값) | 0.719 | 0.476 | 0.472 | 0.474 |
+| SVC (필기, 스케일링 X) | 0.734 | 0 | 0 | 0 |
+
+세 모델 모두 고도화의 핵심은 **스케일링 + `class_weight='balanced'`** 였고, 고도화 후 F1 이 0.61 ~ 0.63 으로 비슷해서 가장 단순하고 설명하기 쉬운 **로지스틱 회귀**를 고른다.
 
 ![모델 비교](./lecture/images/06_churn_model_comparison.png)
 
 ---
 
-## 5. 보스턴 집값 — RMSE
+## 6. 보스턴 집값 — RMSE
 
 | 지표 | 계산 | 단위 |
 |---|---|---|
@@ -118,7 +152,7 @@ grid_lr2 = GridSearchCV(pipe, params2, scoring='f1', cv=5).fit(X_train, y_train)
 
 ---
 
-## 6. 회귀 모델 고도화 — `GridSearchCV` · `RandomizedSearchCV`
+## 7. 회귀 모델 고도화 — `GridSearchCV` · `RandomizedSearchCV`
 
 | 보스턴 집값 | 탐색 | best | 검증 RMSE | 평가 RMSE |
 |---|---|---|---|---|
@@ -157,7 +191,7 @@ grid_lr2 = GridSearchCV(pipe, params2, scoring='f1', cv=5).fit(X_train, y_train)
 - [x] `GridSearchCV` 에 스케일링 없는 `X_train` → `make_pipeline(StandardScaler(), 모델)` 로 fold 마다 학습용만 fit (`logisticregression__C` 이름 규칙)
 - [x] 학습용 정답 비율을 출력하면서 제목은 "**평가용** 데이터의 정답 비율"
 - [x] `select_dtypes(include=['object'])` → `['object', 'string']` (pandas 3 대비, [Day 020](../2026-10-06/) 예시)
-- [x] SVM · 결정 트리 셀이 실행되지 않은 채 저장 → 실행하니 SVC (스케일링 X) 는 전부 "유지"(재현율 0)
+- [x] SVM · 결정 트리 셀이 실행되지 않은 채 저장 → 실행하니 SVC (스케일링 X) 는 전부 "유지"(재현율 0). 로지스틱 회귀처럼 **고도화 단계(탐색 → best → 예측 → 평가 → 특성 중요도)** 까지 추가
 - [x] 회귀 `print(grid_dt.best_score_)` 의 **−3.85** → `-best_score_` 로 RMSE 3.85 (`neg_` 는 "클수록 좋음"에 맞춘 부호)
 - [x] 랜덤 포레스트 탐색 범위에 **기본값(`min_samples_leaf=1`)이 빠짐** → 튜닝 결과가 기본값보다 나쁨. `max_depth` 20 이상은 같은 트리라 중복 후보
 - [x] 경로 `C:/Users/playdata2/work/...` → `./`, 오타 `LogisticRegession` · `LogisticReression` · `performace` · `변환활`, 7천 행 · 예측값 127개 전체 `print` → 모양 · 지표로 요약
@@ -166,7 +200,8 @@ grid_lr2 = GridSearchCV(pipe, params2, scoring='f1', cv=5).fit(X_train, y_train)
 **직접 해본 것**
 - 경고를 기록해서 `ConvergenceWarning` · `n_iter_` 확인, 스케일링 전/후 계수 순위 비교
 - `class_weight` (`None` / `'balanced'` / 1 ~ 5) 에 따른 혼동 행렬 · 재현율 · 정밀도 · F1
-- 로지스틱 회귀 · 결정 트리(기본값 / 튜닝)의 **내장 vs 순열 특성 중요도** 교차 검증
+- 로지스틱 회귀 · 결정 트리(기본값 / 고도화)의 **내장 vs 순열 특성 중요도** 교차 검증, SVC 는 순열 중요도만
+- SVC `C` × `gamma` × `class_weight` 18가지 · 결정 트리 `max_depth` × `min_samples_leaf` × `class_weight` 90가지 `GridSearchCV`
 - 교재 p.143 `RandomizedSearchCV` (`range` 분포, `n_iter=20`) 를 회귀 트리에 적용
 - 기본값을 포함한 탐색 범위(`max_features` 추가)와 `RepeatedKFold` 반복 교차 검증
 - 랜덤 포레스트 후보 120개의 검증 RMSE vs 평가 RMSE 산점도
