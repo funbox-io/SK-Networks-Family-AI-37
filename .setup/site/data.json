@@ -658,6 +658,8 @@
         "파생변수",
         "원핫인코딩",
         "get_dummies",
+        "select_dtypes",
+        "describe",
         "레이블인코딩",
         "replace",
         "map",
