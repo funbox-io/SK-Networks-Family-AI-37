@@ -5,7 +5,7 @@ weekday: 화
 week: 6
 phase: 데이터 분석과 머신러닝/딥러닝
 title: 머신러닝 기본 개념 + 데이터 전처리(특성 공학) — 인코딩 · 스케일링 · 구간화 · query · concat
-tags: python, pandas, scikit-learn, 머신러닝, 지도학습, 비지도학습, 분류, 회귀, train_test_split, 특성공학, 파생변수, 원핫인코딩, get_dummies, 레이블인코딩, replace, map, 스케일링, MinMaxScaler, StandardScaler, 정규화, 표준화, 구간화, pd.cut, query, concat
+tags: python, pandas, scikit-learn, 머신러닝, 지도학습, 비지도학습, 분류, 회귀, train_test_split, 특성공학, 파생변수, 원핫인코딩, get_dummies, select_dtypes, describe, 레이블인코딩, replace, map, 스케일링, MinMaxScaler, StandardScaler, 정규화, 표준화, 구간화, pd.cut, query, concat
 ---
 
 # Day 020 · 2026-10-06 (화)
@@ -113,6 +113,40 @@ pd.get_dummies(df, columns=['label'], dtype=int)    # 지정한 컬럼만 → ir
 ```
 
 `dtype=int` 를 안 주면 1/0 대신 `True/False` 가 나온다. 결측치(NaN) 행은 모든 컬럼이 0 이 된다.
+
+### 예시 — 문자열(object) 컬럼만 골라내기 : `select_dtypes()`
+
+인코딩할 범주형 컬럼을 직접 적지 않고 **자료형으로 골라낸다** (광고 데이터 `ad_performance.csv`).
+
+```python
+# 1) 문자열 컬럼 이름만
+obj_cols = df_ad.select_dtypes(include=['object', 'string']).columns
+print(obj_cols.tolist())                                  # ['Date', 'Channel', 'Age_Group', 'Gender']
+
+# 2) 문자열 컬럼의 데이터 앞부분
+df_ad.select_dtypes(include=['object', 'string']).head()
+
+# 3) 문자열 컬럼의 요약 통계 (count · unique · top · freq)
+df_ad.describe(include=['object', 'string'])
+
+# 4) 컬럼별 자료형에서 문자열만
+df_ad.dtypes[df_ad.dtypes.apply(pd.api.types.is_string_dtype)]
+
+# 반대로 숫자형 컬럼만
+df_ad.select_dtypes(exclude=['object', 'string'])         # = include='number'
+
+# 활용 : 골라낸 컬럼으로 원-핫 인코딩 (날짜는 범주가 아니라서 뺀다 — 180개 컬럼이 생김)
+pd.get_dummies(df_ad, columns=obj_cols.drop('Date'), dtype=int)   # 9열 → 17열
+```
+
+| `describe(include=[...])` | Date | Channel | Age_Group | Gender |
+|---|---|---|---|---|
+| count (개수) | 5000 | 5000 | 5000 | 5000 |
+| unique (고유값 수) | 180 | 5 | 4 | 2 |
+| top (최빈값) | 2025-04-12 | Google | 50s+ | Male |
+| freq (최빈값 빈도) | 41 | 1506 | 1303 | 2535 |
+
+> ⚠️ `include='object'` 대신 **`['object', 'string']`** 으로 쓴다. pandas 2 까지는 문자열 컬럼이 `object` 였지만 **pandas 3 부터는 `str`** 이라, `include='object'` 는 "곧 없어질 동작" 경고(`Pandas4Warning`)가 나오고 `df.dtypes == 'object'` 는 **빈 결과**가 된다. `['object', 'string']` 은 두 버전 모두 경고 없이 동작한다.
 
 ---
 
