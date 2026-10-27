@@ -5,17 +5,17 @@ weekday: 월
 week: 9
 phase: 데이터 분석과 머신러닝/딥러닝
 title: 딥러닝 3일차 — 손실 함수(MSE · 교차 엔트로피 · 이진 교차 엔트로피) · 미분 · 수치 미분
-tags: python, numpy, matplotlib, scikit-learn, 딥러닝, 손실, 손실함수, 오차, MSE, 평균제곱오차, RMSE, 제곱오차, 교차엔트로피, CEE, 이진교차엔트로피, BCE, log, 자연로그, 원핫인코딩, 소프트맥스, 시그모이드, log_loss, mean_squared_error, MLPClassifier, load_digits, predict_proba, 미분, 평균변화율, 순간변화율, 접선의기울기, 해석적미분, 수치미분, 전방차분, 중앙차분, 부동소수점, 반올림오차, 기울기, 경사하강법, 오차역전파
+tags: python, numpy, matplotlib, scikit-learn, 딥러닝, 손실, 손실함수, 오차, MSE, 평균제곱오차, RMSE, 제곱오차, 교차엔트로피, CEE, 이진교차엔트로피, BCE, log, 자연로그, 원핫인코딩, 소프트맥스, 시그모이드, log_loss, mean_squared_error, 입력신호총합, 항등함수, 미분, 평균변화율, 순간변화율, 접선의기울기, 해석적미분, 수치미분, 전방차분, 중앙차분, 부동소수점, 반올림오차, 기울기, 경사하강법, 오차역전파
 ---
 
 # Day 033 · 2026-10-26 (월)
 
 `데이터 분석과 머신러닝/딥러닝` · 9주차
 
-> **한 줄 요약** — 모델이 얼마나 **틀렸는지**를 숫자 하나로 만드는 것이 **손실 함수**다. 회귀는 오차를 **제곱해 평균**(MSE, 큰 오차일수록 크게 벌점), 분류는 정답 클래스 확률에 **−log** 를 씌운다(교차 엔트로피, 0.7 → 0.357). 학습 = 이 숫자를 줄이는 가중치 찾기 — 손글씨 숫자 신경망의 손실을 직접 계산해 sklearn `log_loss` 와 같은 0.2052 를 얻었다. 가중치를 **어느 쪽으로** 바꿀지는 손실 곡선의 **접선의 기울기(미분)** 가 알려 준다 — 양수면 줄이고 음수면 키운다. 컴퓨터는 아주 작은 h 로 **수치 미분**($\frac{f(x+h) - f(x-h)}{2h}$)해서 공식 없이도 기울기 6 을 구했다.
+> **한 줄 요약** — 모델이 얼마나 **틀렸는지**를 숫자 하나로 만드는 것이 **손실 함수**다. 회귀는 오차를 **제곱해 평균**(MSE, 큰 오차일수록 크게 벌점), 분류는 정답 클래스 확률에 **−log** 를 씌운다(교차 엔트로피, 0.7 → 0.357). 출력층 활성화 함수와 손실 함수는 짝(항등 ↔ MSE · 시그모이드 ↔ BCE · 소프트맥스 ↔ CEE)이고, 학습 = 이 숫자를 줄이는 가중치 찾기. 가중치를 **어느 쪽으로** 바꿀지는 손실 곡선의 **접선의 기울기(미분)** 가 알려 준다 — 양수면 줄이고 음수면 키운다. 컴퓨터는 아주 작은 h 로 **수치 미분**($\frac{f(x+h) - f(x-h)}{2h}$)해서 공식 없이도 기울기 6 을 구했다.
 
 📂 실습 노트북
-- [`lecture/loss_functions.ipynb`](./lecture/loss_functions.ipynb) — 손실이란 · MSE 와 '제곱' 의 의미 · log 의 특징 · 교차 엔트로피 · 이진 교차 엔트로피 · 손글씨 숫자 신경망 손실 실습 (메모 `딥러닝_노트_수정본` 손실 부분)
+- [`lecture/loss_functions.ipynb`](./lecture/loss_functions.ipynb) — 손실이란 · MSE 와 '제곱' 의 의미 · log 의 특징 · 교차 엔트로피 · 이진 교차 엔트로피 · 메모 예시(z = [2.0, 1.0, 0.1] · P3 = 0.7 · p = 0.7 · WX + b)로 손실 실습 (메모 `딥러닝_노트_수정본` 손실 부분)
 - [`lecture/numerical_differentiation.ipynb`](./lecture/numerical_differentiation.ipynb) — 평균 변화율 → 접선의 기울기 · 손실 곡선의 기울기와 가중치 방향 · 해석적 vs 수치 미분 · 전방 / 중앙 차분 · h 의 크기 (필기 `수치미분`)
 
 🖼️ 그림 → [`lecture/images/`](./lecture/images/) — 🎬 **시뮬레이션 애니메이션(GIF) 4개** (모두 노트북 코드로 직접 만든 것)
@@ -32,7 +32,7 @@ tags: python, numpy, matplotlib, scikit-learn, 딥러닝, 손실, 손실함수, 
 |---|---|---|---|
 | 회귀 (집값) | 항등 함수 · 뉴런 1개 | **MSE** $\frac{1}{n}\sum (y - t)^2$ | `mean_squared_error` |
 | 이진 분류 (스팸) | 시그모이드 · 뉴런 1개 | **BCE** $-[y\log p + (1-y)\log(1-p)]$ | `log_loss` |
-| 다중 분류 (숫자 0~9) | 소프트맥스 · 뉴런 10개 | **CEE** $-\sum t_k \log y_k$ | `log_loss` |
+| 다중 분류 | 소프트맥스 · 뉴런 = 클래스 수 | **CEE** $-\sum t_k \log y_k$ | `log_loss` |
 
 ---
 
@@ -55,7 +55,8 @@ def cross_entropy_error(y, t):
     delta = 1e-7                                   # log(0) = -inf 방지
     return -np.sum(t * np.log(y + delta)) / y.shape[0]   # 여러 개면 데이터 수로 평균
 
-cross_entropy_error(np.array([[0.1, 0.7, 0.2]]), np.array([[0, 1, 0]]))   # 0.357 (교재 p.45)
+cross_entropy_error(np.array([0.1, 0.7, 0.2]), np.array([0, 1, 0]))                 # 0.357 (교재 p.45)
+cross_entropy_error(np.array([0.05, 0.1, 0.7, 0.1, 0.05]), np.array([0, 0, 1, 0, 0]))  # 0.357 (메모 P3 = 0.7)
 ```
 
 ![교차 엔트로피 애니메이션](./lecture/images/anim_02_cross_entropy.gif)
@@ -66,17 +67,17 @@ cross_entropy_error(np.array([[0.1, 0.7, 0.2]]), np.array([[0, 1, 0]]))   # 0.35
 
 ---
 
-## 4. 손실 함수 실습 — 손글씨 숫자
+## 4. 손실 함수 실습 — 메모 예시로 계산
 
-손글씨 숫자(`load_digits`, 8×8 픽셀, **10클래스**)를 `MLPClassifier` 로 학습 → 출력층 `softmax` · 뉴런 10개. 테스트 데이터의 `predict_proba` 로 교차 엔트로피를 직접 계산하면 **0.2052** = sklearn `log_loss` (정확도 0.978).
+메모의 구조 그대로 **입력 신호의 총합 z → 출력층 활성화 함수 → 손실 함수**.
 
-| 이미지 | 정답 확률 | 손실 $-\log p$ |
-|---|---|---|
-| 잘 맞힌 5 · 6 | 1.00 | 0.000 |
-| 8 을 1 로 착각 | 0.01 | 4.881 |
-| 1 을 4 로 확신 | 0.00 | **33.5** |
+| 문제 | 메모 예시 | 출력 | 손실 |
+|---|---|---|---|
+| 다중 분류 | z = [2.0, 1.0, 0.1] → 소프트맥스 | [0.66, 0.24, 0.10] | 정답 1번째 **0.417** · 2번째 1.417 · 3번째 2.317 |
+| 이진 분류 | p = 0.7 (시그모이드 출력) | 1 일 확률 0.7 · 0 일 확률 0.3 | 정답 1 → **0.357** · 정답 0 → 1.204 |
+| 회귀 | 예측 = WX + b (항등 함수) | [3.0, 2.5, 5.0] · 정답 [3, 3, 4] | MSE **0.417** |
 
-전체 손실은 이미지마다의 손실의 **평균** — 확신하고 틀린 몇 장이 평균을 크게 끌어올린다.
+원-핫 [0, 0, 1, 0, 0] 에서 정답 확률 P3 를 키우면 손실이 0 으로 간다 : P3 = 0.2 → 1.609 · 0.5 → 0.693 · 0.7 → 0.357 · 0.9 → 0.105 · 0.99 → 0.010.
 
 ---
 
@@ -88,11 +89,11 @@ cross_entropy_error(np.array([[0.1, 0.7, 0.2]]), np.array([[0, 1, 0]]))   # 0.35
 
 🎬 $x = 1$ 에서 $h$ 를 2 → 0.02 로 줄이면 할선의 기울기 4 → 2.02, 접선(2)과 겹친다.
 
-손실 $L$ 을 가중치 $w$ 의 함수로 그리면 포물선. **기울기 + → w 를 줄이고, 기울기 − → w 를 키운다** (기울기의 반대 방향).
+메모 : 회귀 출력 뉴런의 예측 $y = wx$, 정답 1 이면 손실 $L = (1 - y)^2$ → $w$ 에 대한 그래프가 **포물선**. **기울기 + → w 를 줄이고, 기울기 − → w 를 키운다** (기울기의 반대 방향).
 
 ![손실 곡선의 기울기 애니메이션](./lecture/images/anim_04_loss_slope.gif)
 
-🎬 정답이 $t = 2x$ 인 데이터에서 $w$ 를 움직이며 접선을 그렸다. w = 0.5 → 기울기 −22.5(키운다), w = 2.5 → +7.5(줄인다), w = 2 → 0(최솟값). 멀수록 가파르고 가까울수록 완만하다.
+🎬 메모의 손실 $L = (1 - y)^2$, $y = wx$ ($x = 1$) 위에서 $w$ 를 움직이며 접선을 그렸다. w = −0.5 → 기울기 −3(키운다), w = 1.5 → +1(줄인다), w = 1 → 0(최솟값). 멀수록 가파르고 가까울수록 완만하다.
 
 ---
 
@@ -135,8 +136,8 @@ $h$ 가 너무 크면 근사 오차, 너무 작으면 **반올림 오차**. 6.00
 **직접 해본 것**
 - MSE · 교차 엔트로피 · 이진 교차 엔트로피를 numpy 로 구현해 sklearn `mean_squared_error` · `log_loss` 와 값 비교
 - 정답을 원-핫 / 정답 번호 두 방식으로 넣어 교차 엔트로피 계산, BCE = 클래스 2개 CEE 확인
-- 손글씨 숫자 신경망의 `predict_proba` 로 교차 엔트로피 직접 계산, 이미지별 손실이 가장 작은 / 큰 사례 확인
-- 평균 변화율 → 접선, 전방 / 중앙 차분 오차를 h 별로 비교, 손실 함수를 수치 미분해 가중치 방향 판단
+- 메모 예시(z = [2.0, 1.0, 0.1] 소프트맥스 · p = 0.7 · WX + b · 원-핫 P3)로 활성화 함수 → 손실 계산 이어 보기
+- 평균 변화율 → 접선, 전방 / 중앙 차분 오차를 h 별로 비교, 메모의 $L = (1 - wx)^2$ 를 수치 미분해 가중치 방향 판단
 - `FuncAnimation` 으로 제곱 오차 · 교차 엔트로피 · 할선 → 접선 · 손실 곡선 기울기 애니메이션
 
 **막혔던 부분 / 질문**
@@ -168,6 +169,5 @@ $h$ 가 너무 크면 근사 오차, 너무 작으면 **반올림 오차**. 6.00
 ## 🔗 참고 링크
 
 - [scikit-learn — `log_loss`](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.log_loss.html) · [`mean_squared_error`](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.mean_squared_error.html)
-- [scikit-learn — Neural network models (MLP)](https://scikit-learn.org/stable/modules/neural_networks_supervised.html) · [`load_digits`](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_digits.html)
 - [Wikipedia — Cross-entropy](https://en.wikipedia.org/wiki/Cross-entropy) · [Mean squared error](https://en.wikipedia.org/wiki/Mean_squared_error) · [Numerical differentiation](https://en.wikipedia.org/wiki/Numerical_differentiation)
 - [Python 공식 문서 — 부동소수점 산술: 문제점 및 한계](https://docs.python.org/ko/3/tutorial/floatingpoint.html)
