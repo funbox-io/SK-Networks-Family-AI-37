@@ -15,7 +15,7 @@ tags: python, numpy, pandas, matplotlib, scikit-learn, pytorch, 딥러닝, 배�
 > **한 줄 요약** — 손실을 줄이려면 가중치를 **기울기의 반대 방향** 으로 `학습률 × 기울기` 만큼 옮긴다(**경사하강법**, 메모의 포물선은 w = 3 → 1.023 으로 20 걸음). 가중치가 수백 개여도 기울기는 **계산 그래프를 거꾸로 한 번 훑는 오차역전파** 로 한꺼번에 구한다(사과 220원 → ∂사과값 2.2). **Momentum** 은 관성으로 가짜 골짜기를 넘을 수 있지만 학습률에 따라 실패도 하고, 실무 표준은 **Adam**. 이걸 PyTorch 5 단계 루프로 묶어 **타이타닉 MLP 87.79%** (로지스틱 회귀 85.88%), 당뇨 75.65%, 붓꽃 30/30 을 얻었고, 200 에포크로 늘리면 평가 손실이 0.334 → 0.444 로 다시 오르는 **과대적합** 도 확인했다.
 
 📂 실습 노트북
-- [`lecture/mlp_titanic_binary.ipynb`](./lecture/mlp_titanic_binary.ipynb) — 데이터 분할 · 표준화 · 텐서 · DataLoader · MLP · `BCEWithLogitsLoss` · Adam · 학습 5 단계 · 평가 · 로지스틱 회귀 / 학습률 / 배치 / 에포크 비교 · 자주 하는 실수 (필기 `MLP_타이타닉_생존자_예측`)
+- [`lecture/mlp_titanic_binary.ipynb`](./lecture/mlp_titanic_binary.ipynb) — 데이터 분할 · 표준화 · 텐서 · DataLoader · MLP · `BCEWithLogitsLoss` · Adam · 학습 5 단계 · 평가(`classification_report` · 혼동 행렬) · 로지스틱 회귀 / 학습률 / 배치 / 에포크 비교 · 자주 하는 실수 (필기 `MLP_타이타닉_생존자_예측`)
 - [`lecture/gradient_descent_backprop.ipynb`](./lecture/gradient_descent_backprop.ipynb) — 배치 vs 미니배치 · 편미분 · 경사하강법 · 학습률 · 행렬 모양 · 다중 분류 손실 · 계산 그래프 · 역전파 · SGD / Momentum / AdaGrad / Adam (메모 `경사하강법` · `다중_분류_손실`, 교재 내용 새로 작성)
 - [`lecture/mlp_diabetes_iris.ipynb`](./lecture/mlp_diabetes_iris.ipynb) — 당뇨 이진 분류 · 붓꽃 다중 분류(`CrossEntropyLoss`, 결정 경계) · 붓꽃 회귀(`MSELoss`, RMSE) (실습 데이터로 새로 작성)
 
@@ -140,7 +140,7 @@ with torch.no_grad():                                       # 평가 (교재 p.8
 | 실험 | 평가 정확도 | 비고 |
 |---|---|---|
 | 로지스틱 회귀 (기준) | 0.8588 | 은닉층 없음 |
-| **MLP 기본** (lr 0.005, 배치 32, 50 에포크) | **0.8779** | 혼동 행렬 생존자 99 명 중 20 명 놓침 |
+| **MLP 기본** (lr 0.005, 배치 32, 50 에포크) | **0.8779** | 생존 재현율 0.798 (99 명 중 20 명 놓침) · 필기 실행은 0.8740 |
 | lr 0.001 | 0.8626 | 50 에포크로는 덜 내려감 |
 | 배치 학습 50 에포크 | 0.8626 | 업데이트 50 번뿐 (미니배치는 1,650 번) |
 | 배치 학습 500 에포크 | 0.8550 | 평가 손실 147 에포크 0.349 → 0.583 |
@@ -185,9 +185,10 @@ with torch.no_grad():                                       # 평가 (교재 p.8
 
 **필기 · 메모 · 교재에서 고친 부분**
 - [x] 필기 : 안 쓰는 `from torch.cuda import is_available`, 빈 셀 `# 무료 gpu 연결`, Colab `drive.mount` → 같은 폴더 CSV
-- [x] 필기 : 시드가 없어 매번 결과가 달라짐(마지막 손실 0.3090) → `torch.manual_seed` + DataLoader `generator`
-- [x] 필기 : 주석 `strafity` → stratify, `클래수` → 클래스, `hyperparamter` → hyperparameter, `lr(학습)` → 학습률. `params` 는 하이퍼파라미터가 아니라 **학습되는 파라미터**
-- [x] 필기 : `y_test` 텐서 · 평가가 없음 → 교재 p.85 평가 + 혼동 행렬 + 에포크별 평가 기록 추가, `train()` 은 에포크마다
+- [x] 필기 : 시드가 없어 매번 결과가 달라짐(필기 실행 손실 0.3026 · 정확도 0.8740) → `torch.manual_seed` + DataLoader `generator`
+- [x] 필기 : 주석 `strafity` → stratify, `hyperparamter` → hyperparameter, `lr(학습)` → 학습률. `params` 는 하이퍼파라미터가 아니라 **학습되는 파라미터**
+- [x] 필기 평가 : 변수 오타 `test_ouput` → `test_output`, `test_probs1` 은 확률이 아니라 0/1 예측값 → `test_preds` 로 통일, 같은 예측을 두 번 하던 두 셀을 합침, (N, 1) → `.ravel()`
+- [x] 필기 : 평가를 마지막에 한 번만 → `y_test_tensor` 로 에포크별 평가 손실 · 정확도 기록 + 혼동 행렬, `train()` 은 에포크마다
 - [x] 메모 `경사하강법` : "입력 함수의 총합" → **입력 신호의 총합**, "손실이 크면 기울기도 크다" 는 볼록한 포물선에서만 ($|g| = 2\sqrt L$)
 - [x] 메모 `다중_분류_손실` : $\sum t\log P = -\log 0.7$ (양수) → $\sum t\log P = \log 0.7$ (**음수**), $E = -\log 0.7 = 0.357$. 점수 $n_1$ 과 확률 0.1 사이에 **소프트맥스** 가 빠짐, 번호 `1)` 중복
 - [x] 교재 p.47 · 48 같은 슬라이드 반복, "N/n 번" → **올림** (33 번)
@@ -203,7 +204,7 @@ with torch.no_grad():                                       # 평가 (교재 p.8
 - 수치 미분으로 2층 신경망의 기울기를 구해 가중치와 모양이 같은지 확인
 - 곱셈 노드 클래스로 사과 계산 그래프 역전파 → PyTorch `.backward()` 와 대조, 퍼셉트론 기울기를 세 가지 방법으로 검산
 - SGD · Momentum · AdaGrad · Adam 을 numpy 로 구현해 언덕이 있는 손실 곡선에서 경주, 학습률별 표
-- 타이타닉 MLP 에 평가를 붙이고 로지스틱 회귀 · 학습률 · 배치 · 에포크 비교, 실수 재현(`unsqueeze` 누락, 시그모이드 두 번)
+- 타이타닉 MLP 평가(`classification_report`)를 정리하고 로지스틱 회귀 · 학습률 · 배치 · 에포크 비교, 실수 재현(`unsqueeze` 누락, 시그모이드 두 번)
 - 당뇨 · 붓꽃 데이터로 이진 · 다중 · 회귀 세 유형을 같은 5 단계 루프로, 결정 경계 그리기
 - `FuncAnimation` 으로 애니메이션 5 개
 
