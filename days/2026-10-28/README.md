@@ -35,6 +35,27 @@ tags: python, numpy, pandas, matplotlib, scikit-learn, pytorch, 딥러닝, 배�
 
 PyTorch 에서는 `TensorDataset` 으로 문제 · 정답을 한 쌍으로 묶고, `DataLoader(batch_size=32, shuffle=True)` 가 매 에포크 섞어서 32 개씩 꺼내 준다.
 
+```python
+import torch
+from torch.utils.data import TensorDataset, DataLoader
+
+torch.manual_seed(42)
+X = torch.randn(1046, 10)                  # 타이타닉 학습용과 같은 크기: 1046 명 × 특성 10
+y = torch.randint(0, 2, (1046,)).float()   # 정답 0 / 1
+
+dataset = TensorDataset(X, y)              # 문제 · 정답을 같은 인덱스끼리 한 쌍으로
+
+batch_loader = DataLoader(dataset, batch_size=len(dataset))       # 배치 학습: 전체를 한 번에
+mini_loader = DataLoader(dataset, batch_size=32, shuffle=True)    # 미니배치: 섞어서 32 개씩
+
+print(len(batch_loader), len(mini_loader))   # 1 33  ← 1 에포크 업데이트 횟수
+sizes = [len(bx) for bx, by in mini_loader]
+print(sizes[0], sizes[-1])                   # 32 22 ← 마지막 묶음은 남은 22 개
+
+bx, by = next(iter(mini_loader))             # 미니배치 하나 꺼내 보기
+print(bx.shape, by.shape)                    # torch.Size([32, 10]) torch.Size([32])
+```
+
 ---
 
 ## 2. 편미분 · 경사하강법 (교재 p.54~58)
@@ -44,6 +65,36 @@ PyTorch 에서는 `TensorDataset` 으로 문제 · 정답을 한 쌍으로 묶�
 $$W_{new} = W_{old} - \eta \frac{\partial L}{\partial W}$$
 
 메모 : $y = wx$ ($x = 1$), 정답 1 → $L = (1 - w)^2$. **w = 3 (손실 4) → w = 2 (손실 1) → w = 1 (손실 0)**.
+
+```python
+import numpy as np
+
+def numerical_gradient(f, x, h=1e-4):
+    """변수를 하나씩만 ±h 움직여 중앙 차분 → 편미분을 모은 기울기 배열"""
+    x = x.astype(float).copy()
+    grad = np.zeros_like(x)
+    for i in range(x.size):
+        orig = x[i]
+        x[i] = orig + h; fxh1 = f(x)          # i 번째 변수만 +h (나머지는 상수 취급)
+        x[i] = orig - h; fxh2 = f(x)          # i 번째 변수만 -h
+        grad[i] = (fxh1 - fxh2) / (2 * h)
+        x[i] = orig                           # 원래 값으로 되돌리기
+    return grad
+
+f = lambda x: np.sum(x ** 2)                  # f(x0, x1) = x0² + x1²
+print(numerical_gradient(f, np.array([3.0, 4.0])))   # [6. 8.]
+
+def gradient_descent(w, lr=0.1, steps=20):
+    """메모의 손실 L = (1 - w)² 를 경사하강법으로 내려가기"""
+    for _ in range(steps):
+        grad = -2 * (1 - w)                   # dL/dw (연쇄법칙: 2(1-w) × (-1))
+        w = w - lr * grad                     # 기울기의 반대 방향으로 lr × 기울기 만큼
+    return w
+
+print(gradient_descent(3.0, lr=0.1))    # 1.0231   ← 목표 w = 1 근처
+print(gradient_descent(3.0, lr=0.01))   # 2.3352   ← 너무 작아 아직 멀다
+print(gradient_descent(3.0, lr=1.1))    # 77.6752  ← 너무 커서 발산
+```
 
 ![경사하강법 애니메이션](./lecture/images/anim_01_gradient_descent.gif)
 
@@ -62,6 +113,27 @@ $$W_{new} = W_{old} - \eta \frac{\partial L}{\partial W}$$
 | (4, 2) | (2, 3) | (4, 3) | (3, 3) | (4, 3) | **(2, 3) · (3, 3)** — 가중치와 같은 모양 |
 
 원-핫 정답이면 **정답 클래스의 확률 하나만** 손실에 남는다 : $E = -(0 \cdot \log 0.1 + 1 \cdot \log 0.7 + 0 \cdot \log 0.2) = -\log 0.7 = 0.357$.
+
+```python
+import numpy as np
+
+rng = np.random.default_rng(0)
+X  = rng.normal(size=(4, 2))                   # 미니배치 4 개 × 입력 특성 2 개
+W1 = rng.normal(size=(2, 3)); b1 = np.zeros(3) # 입력 2 → 은닉 노드 3
+W2 = rng.normal(size=(3, 3)); b2 = np.zeros(3) # 은닉 3 → 출력 3 (클래스 3 개)
+
+Z = np.maximum(0, X @ W1 + b1)                 # (4, 2) @ (2, 3) → (4, 3), ReLU
+A = Z @ W2 + b2                                # (4, 3) @ (3, 3) → (4, 3), 클래스별 점수
+Y = np.exp(A) / np.exp(A).sum(axis=1, keepdims=True)   # 소프트맥스: 행마다 확률 합 1
+print(X.shape, Z.shape, Y.shape, Y.sum(axis=1))         # (4, 2) (4, 3) (4, 3) [1. 1. 1. 1.]
+
+# 메모 : 개 · 고양이 · 호랑이, 정답 고양이
+y = np.array([0.1, 0.7, 0.2])                  # 소프트맥스 출력(확률)
+t = np.array([0, 1, 0])                        # 원-핫 정답
+print(t * np.log(y))                           # [-0. -0.3567 -0.] ← 정답 칸만 남는다
+print(np.sum(t * np.log(y)))                   # -0.3567 (음수)
+print(-np.sum(t * np.log(y)))                  # 0.3567  ← 앞에 - 를 붙인 교차 엔트로피 (양수)
+```
 
 ---
 
@@ -94,6 +166,54 @@ $$\frac{\partial L}{\partial w} = \frac{\partial L}{\partial a} \times \frac{\pa
 | Momentum | $v = 0.9v - \eta g,\ W + v$ | 속도(관성) 기억 |
 | AdaGrad | $h += g^2,\ W - \frac{\eta}{\sqrt h} g$ | 많이 움직인 가중치는 보폭 ↓ |
 | Adam | 기울기 평균 + 기울기² 평균(오래된 값은 잊음) | Momentum + 보폭 자동 조절 |
+
+```python
+import numpy as np
+
+loss = lambda w: (w ** 2 - 4) ** 2 / 4 + w     # 언덕이 있는 손실 곡선
+grad = lambda w: w * (w ** 2 - 4) + 1           # 기울기 dL/dw
+
+def sgd(w, lr=0.05, steps=100):
+    for _ in range(steps):
+        w -= lr * grad(w)                       # 기울기 반대로 한 걸음
+    return w
+
+def momentum(w, lr=0.02, alpha=0.9, steps=100):
+    v = 0.0                                     # 속도
+    for _ in range(steps):
+        v = alpha * v - lr * grad(w)            # 이전 속도(관성) + 이번 기울기
+        w += v
+    return w
+
+def adagrad(w, lr=0.5, steps=100):
+    h = 0.0                                     # 기울기 제곱 누적
+    for _ in range(steps):
+        g = grad(w)
+        h += g * g
+        w -= lr * g / (np.sqrt(h) + 1e-7)       # 많이 움직였을수록 보폭 ↓ (1e-7: 0 으로 나누기 방지)
+    return w
+
+def adam(w, lr=0.3, b1=0.9, b2=0.999, steps=100):
+    m = s = 0.0
+    for t in range(1, steps + 1):
+        g = grad(w)
+        m = b1 * m + (1 - b1) * g               # 기울기 평균 (관성)
+        s = b2 * s + (1 - b2) * g * g           # 기울기² 평균 (오래된 값은 잊음)
+        m_hat = m / (1 - b1 ** t)               # 처음엔 0 쪽으로 치우쳐서 보정
+        s_hat = s / (1 - b2 ** t)
+        w -= lr * m_hat / (np.sqrt(s_hat) + 1e-8)
+    return w
+
+for name, opt in [('SGD', sgd), ('Momentum', momentum), ('AdaGrad', adagrad), ('Adam', adam)]:
+    w = opt(3.5)                                # 모두 w = 3.5 에서 출발
+    print(f'{name:8s} w = {w:+.2f}  손실 = {loss(w):+.2f}')
+# SGD      w = +1.86  손실 = +1.93   ← 가짜 골짜기
+# Momentum w = -2.12  손실 = -2.06   ← 진짜 골짜기
+# AdaGrad  w = +1.86  손실 = +1.93
+# Adam     w = +1.85  손실 = +1.93
+
+# PyTorch 내장 옵티마이저도 같은 결과: optim.SGD(..., momentum=0.9) → -2.12, optim.Adam(lr=0.3) → 1.85
+```
 
 ![최적화 알고리즘 비교 애니메이션](./lecture/images/anim_03_optimizers.gif)
 
