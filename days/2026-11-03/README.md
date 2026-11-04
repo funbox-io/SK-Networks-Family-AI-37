@@ -48,7 +48,7 @@ tags: python, nlp, 자연어처리, 언어모델, nltk, sent_tokenize, word_toke
 
 ```python
 nltk.download('punkt_tab'); nltk.download('stopwords')
-stopwords_list = nltk.corpus.stopwords.words('english')      # 198개 — the, a, and, is, ... not 도 포함
+stopwords_list = nltk.corpus.stopwords.words('english')      # 198개(데이터 버전마다 다름) — the, a, and, is, ... not 도 포함
 no_stop = [w for w in tokens_en if w not in stopwords_list]   # 33 단어 → 14 단어
 ```
 
@@ -105,7 +105,7 @@ word_freq = {'hug': 10, 'pug': 5, 'pun': 12, 'bun': 4, 'hugs': 5}
 
 🎬 왼쪽은 단어를 현재 사전으로 표시한 모습, 오른쪽은 바이그램 빈도. 가장 긴 막대(주황)를 합쳐 사전(아래)에 추가하면 단어 표시가 바뀌고 빈도를 다시 센다. 직접 구현 · Hugging Face `tokenizers` 모두 교재와 같은 사전 `b g h n p s u ug un hug pun` 이 된다.
 
-학습 때 없던 `bug` → `b + ug`, `unhug` → `un + hug` 로 표현(OOV 해결). 초기 문자에 없는 `m` 은 `[UNK]` → 실제 토크나이저는 모든 문자를 초기 사전에 넣고 시작한다.
+학습 때 없던 `bug` → `b + ug`, `unhug` → `un + hug` 로 표현(OOV 해결). 초기 문자에 없는 `m` 은 `[UNK]` → 실제 토크나이저는 말뭉치의 문자로 초기 사전을 넉넉히 만들고 시작한다. 단 `BertWordPieceTokenizer` 는 기본 **1,000자**(`limit_alphabet`)만 남겨 한글은 드문 글자가 잘린다(5절), GPT-2 의 byte-level BPE 는 **바이트 256개**로 시작해 `[UNK]` 가 없다.
 
 **BPE vs WordPiece** — 같은 예시에서 BPE 첫 병합은 빈도 최대 `(u, g)`(20), WordPiece 는 점수 $\frac{f(ab)}{f(a)f(b)}$ 최대 `(g, s)`(0.050, 나머지 0.028). `s` 는 언제나 `g` 뒤에만 나오기 때문.
 
@@ -132,11 +132,12 @@ bert_tokenizer('가는 말이 고와야 오는 말이 곱다')
 
 | 비교 | 결과 |
 |---|---|
-| 필기처럼 원본 파일(id · 라벨 포함)로 학습 | 사전 3만 중 숫자 토큰 **5,778개 (19.3%)** — 필기 `vocab.txt` 도 5,778개 |
+| 필기처럼 원본 파일(id · 라벨 포함)로 학습 | 사전 3만 중 숫자 토큰 **약 5,780개 (19.3%)** — 필기 `vocab.txt` 도 5,778개 |
 | 리뷰 문장만 학습 | 숫자 토큰 **154개 (0.5%)** |
 | `BertTokenizerFast(..., lowercase=False)` | 무시됨 → `Marvel` → `m ##ar ##ve ##l` |
 | `do_lower_case=False` | `M ##ar ##ve ##l` |
-| `strip_accents` 옵션 없이 | 한글이 자모로 분해(NFD, `곱다` 2자 → 5자) → 전부 `[UNK]` |
+| `strip_accents` 옵션 없이 | 토큰화 때만 한글이 자모로 분해(NFD, `곱다` 2자 → 5자) → 음절로 만든 사전에 없어 전부 `[UNK]` |
+| 학습 · 토큰화 둘 다 `strip_accents=True` | `[UNK]` 는 없지만 **자모 단위** 사전 — `갔어요` → `가` + `##ᆻ어요` (받침만 떨어짐) |
 
 ![WordPiece 복원 애니메이션](./lecture/images/anim_03_wordpiece_restore.gif)
 
@@ -181,12 +182,12 @@ bert_tokenizer('가는 말이 고와야 오는 말이 곱다')
 - [x] 메모 BPE `hug (hu,ug) 10번 / hu 5번 ug 5번` → hug 에서 각 10번, 합치면 (h,u) **15** · (u,g) **20**
 - [x] 메모 바이그램 `(u,p) 12개` → **(u,n)**, `(h.ug)1whdfb` → 한/영 오타, **(h, ug) 10회**
 - [x] 필기 드라이브 마운트 · `/content/drive/Othercomputers/...` 경로 → 같은 폴더의 `ratings_*.txt`
-- [x] 필기 원본 파일을 그대로 학습 → id · 라벨 · 헤더까지 학습해 사전의 19% 가 숫자 → **`document` 열만** 뽑아 학습
+- [x] 필기 원본 파일을 그대로 학습 → 리뷰 id 숫자 · 라벨까지 학습해 사전의 19% 가 숫자 조각 → **`document` 열만** 뽑아 학습
 - [x] 필기 `BertTokenizerFast.from_pretrained(..., lowercase=False)` → 그런 인자가 없어 **무시**, 영어가 소문자로 → **`do_lower_case=False`**
 - [x] 필기 변수 `BartToken` → BART 는 다른 모델, `wp_tokenizer` 로 / `from enum import Flag` 삭제 / 주석 `대좋해` · `트렌스포머` → 대조해 · 트랜스포머
 - [x] 필기 예시 `가는말이고아야` → 속담은 `가는 말이 고와야 오는 말이 곱다` (둘 다 토큰화해서 비교)
 - [x] 교재 p.27 WordPiece "가장 빈번한 바이그램 쌍을 병합" → 그건 BPE 기준. WordPiece 는 **빈도 ÷ (각 조각 빈도의 곱)** 점수
-- [x] 교재 p.27 토큰 `'##ᆻ다'` → 악센트 제거(NFD)로 한글이 자모로 분해된 흔적. 학습 · 토큰화 모두 `strip_accents=False`
+- [x] 교재 p.27 토큰 `눈부 · ##셔 · ##ᆻ다` → 학습 · 토큰화를 모두 악센트 제거(NFD)한 **자모 단위 사전**의 결과(`셨` 이 `셔` + 받침 `ᆻ` 으로 갈림). 같은 문장이 음절 단위 사전(`strip_accents=False`)에서는 `눈부 ##셨다`. 핵심은 **두 설정을 같게** 맞추는 것
 
 **직접 해본 것**
 - 정규식 전처리, NLTK 불용어로 빈도 상위 단어 확인, `kiwipiepy` 로 교재 형태소 예시 확인 · 조사 / 어미 제거
