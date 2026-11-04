@@ -38,6 +38,7 @@ tags: python, streamlit, pandas, numpy, matplotlib, scikit-learn, pytorch, 팀�
 |---|---|
 | `@st.cache_data(path, st_mtime)` | 집계 · 성능 결과 저장, **파일이 바뀌면 다시 계산** |
 | `@st.cache_resource` + `threading.Thread` | PyTorch 로딩을 백그라운드에서 한 번만 |
+| `st.html` / `st.markdown` | `app.py` 주석 기준 `st.html` 은 `<svg>` 를 지워서, SVG 가 든 블록(히어로 · 꺾은선 · ROC)만 `st.markdown` |
 | `st.fragment(run_every=0.5)` | 사이드바 상태만 0.5초마다 다시 그려 '연결됨' 으로 |
 | `st.session_state` · `st.query_params` | 현재 페이지 기억 · 새로고침해도 유지 |
 | `st.form` | 버튼을 눌렀을 때만 예측 |
@@ -61,7 +62,7 @@ tags: python, streamlit, pandas, numpy, matplotlib, scikit-learn, pytorch, 팀�
 
 ![히트맵 애니메이션](./lecture/images/anim_04_heatmap.gif)
 
-🎬 '이탈 원인 분석' 페이지의 로그인 간격 × 거래 금액 히트맵을 셀마다 채웠다(색 기준도 앱과 같게 40 · 50 · 65%). 1–4일 행(1,113명)만 2~11% 로 낮고, 거래 상위 25% 열이 전체적으로 낮다. 단, `avg_frequency_login_days` 는 README 에서도 '정확한 정의 미확인' 인 열이다.
+🎬 '이탈 원인 분석' 페이지의 로그인 간격 × 거래 금액 히트맵을 셀마다 채웠다(색 기준도 앱과 같게 40 · 50 · 65%). 1–4일 행(1,113명)만 2~11% 로 낮고, 거래 상위 25% 열이 전체적으로 낮다. 단, `avg_frequency_login_days` 는 팀 README 에서도 '정확한 정의 미확인' 인 열이고, Hugging Face 원본의 `Error` 3,522명 · 음수 683명을 중앙값 **16.0** 으로 채워 '15일 이상' 구간(22,547명)에 채운 값 4,205명이 섞여 있다.
 
 **📝 같은 값이 많은 열의 4분위**
 
@@ -72,7 +73,7 @@ pd.qcut(ranks, q=4, labels=['하위 25%', '중하위 25%', '중상위 25%', '상
 
 ![4분위 애니메이션](./lecture/images/anim_03_rank_qcut.gif)
 
-🎬 포인트를 줄 세우면 **697.62(중앙값으로 채운 값)에 3,446명**이 평평하게 몰려 있고, 4분위 경계가 정확히 그 덩어리를 가른다. `rank(method='first')` 는 같은 값을 CSV 순서대로 순위 매겨 1,724명은 '중하위', 1,722명은 '중상위' 로 **임의로** 나뉜다. 행 순서만 섞어도 두 구간 이탈률이 88.6 → 88.1% · 26.6 → 27.1% 로 흔들린다. 값 기준 `pd.qcut(p, 4)` 는 같은 값을 한 구간에 두지만 인원이 10,969 · 7,526 으로 달라진다.
+🎬 포인트를 줄 세우면 **697.62(중앙값으로 채운 값)에 3,446명**(원본 결측 3,443명 + 원래 697.62 였던 3명)이 평평하게 몰려 있고, 4분위 경계가 정확히 그 덩어리를 가른다. `rank(method='first')` 는 같은 값을 CSV 순서대로 순위 매겨 1,724명은 '중하위', 1,722명은 '중상위' 로 **임의로** 나뉜다. 행 순서만 섞어도 두 구간 이탈률이 88.6 → 88.1% · 26.6 → 27.1% 로 흔들린다. 값 기준 `pd.qcut(p, 4)` 는 같은 값을 한 구간에 두지만 인원이 10,969 · 7,526 으로 달라진다.
 
 ---
 
@@ -85,7 +86,7 @@ values = frame[col].astype(object).where(frame[col].notna(), fill) # ③ 결측 
 np.column_stack([values == c for c in categories])                 # ④ 원-핫 (모르는 값 = 전부 0)
 ```
 
-전처리기 `.pkl` 은 열지 않고(pickle 은 열 때 코드가 실행될 수 있음) 같은 80 : 20 분할로 다시 fit 한 통계를 넣었다 → **NumPy 변환 == scikit-learn 변환 `True`**, 입력 11개.
+`app.py` 가 이렇게 하는 이유는 주석에 따르면 scikit-learn 버전이 다르면 `transform()` 이 내부 속성 차이로 오류를 내기 때문(예: `SimpleImputer` 의 `_fill_dtype`). 여기서는 전처리기 `.pkl` 은 열지 않고(pickle 은 열 때 코드가 실행될 수 있음) 같은 80 : 20 분할로 다시 fit 한 통계를 넣었다 → **NumPy 변환 == scikit-learn 변환 `True`**, 입력 11개.
 
 ![전처리 → 예측 애니메이션](./lecture/images/anim_02_transform_pipeline.gif)
 
@@ -133,7 +134,7 @@ avg_value = float(total_value) * MANWON / int(total_count)   # 최종본 : 만�
 **팀 코드에서 짚어 본 부분**
 - [x] NumPy 로 다시 짠 전처리가 scikit-learn `ColumnTransformer` 와 같은지 → `allclose = True` ✔
 - [x] 포인트 4분위 `rank(method='first')` → 동점 3,446명이 행 순서대로 두 구간에 갈림 → 값 기준 구간 + 경계값(624 · 698 · 757점) 표시 제안
-- [x] '로그인 간격(일)' 로 보여 주는 `avg_frequency_login_days` 는 정의 미확인 · 16.0 에 5,524명 몰림
+- [x] '로그인 간격(일)' 로 보여 주는 `avg_frequency_login_days` 는 정의 미확인 · 원본 `Error` · 음수 4,205명을 중앙값 16.0 으로 채워 16.0 에 5,524명 몰림
 - [x] 최종본 '보유 포인트 (만원)' → 포인트는 점수(−760 ~ 2,069), 초기본 표기가 맞음
 - [x] 입력 범위 제한 없음 → 학습 범위 밖 값도 그럴듯한 확률을 냄 (`max_value` 로 막기)
 - [x] 처음 보는 범주 → 원-핫 전부 0 으로 조용히 예측
