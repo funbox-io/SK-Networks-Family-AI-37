@@ -22,11 +22,11 @@
 | 실습 | 결과 |
 |---|---|
 | NLTK | `sent_tokenize('Hello Mr. Smith. How are you?')` → 2문장 (`split('. ')` 은 3조각) · `word_tokenize("Don't …")` → `Do / n't / … / .` |
-| 불용어 | 영어 198개, 예문 33 단어 → 14 단어 (빈도 1~3위 the · was · and 가 모두 불용어) · 한글 `꽃밭에 꽃이 많이 피었다` → 꽃밭 · 꽃 · 많이 · 피 |
+| 불용어 | 영어 198개(NLTK 데이터 버전마다 다름), 예문 33 단어 → 14 단어 (빈도 1~3위 the · was · and 가 모두 불용어) · 한글 `꽃밭에 꽃이 많이 피었다` → 꽃밭 · 꽃 · 많이 · 피 |
 | 어절 사전 OOV | 학습 어절 357,862종 중 3만 개 사전 → 테스트 어절 **36.1%** OOV, `재미…` 어절만 2,362종 |
 | BPE (교재 예시) | ug(20) → un(16) → hug(15) → pun(12), 최종 사전 11개 — 직접 구현 = `tokenizers` = 교재 |
 | BPE vs WordPiece | 첫 병합 BPE `(u, g)` 빈도 20 / WordPiece `(g, s)` 점수 0.050 |
-| WordPiece 사전 | 리뷰만 학습 : 숫자 토큰 154개 · `##` 조각 29.6% / 원본 파일 학습 : 숫자 토큰 5,778개(19.3%) |
-| `BertTokenizerFast` 옵션 | `lowercase=False` 무시(`Marvel` → `m ##ar …`) · `strip_accents` 없으면 한글 전부 `[UNK]` |
+| WordPiece 사전 | 리뷰만 학습 : 숫자 토큰 154개 · `##` 조각 29.6% / 원본 파일 학습 : 숫자 토큰 약 5,780개(19.3%) |
+| `BertTokenizerFast` 옵션 | `lowercase=False` 무시(`Marvel` → `m ##ar …`) · `strip_accents` 없으면 한글 전부 `[UNK]` · 학습도 `strip_accents=True` 면 자모 단위(`갔어요` → `가 ##ᆻ어요`) |
 | `[UNK]` 비율 (사전 3만) | 어절 36.1% → WordPiece 1.3% → `limit_alphabet=6000` **0.04%** |
 | 사전 크기 | 리뷰당 평균 토큰 1,000개 28.0 · 5,000개 18.1 · 30,000개 14.1 |

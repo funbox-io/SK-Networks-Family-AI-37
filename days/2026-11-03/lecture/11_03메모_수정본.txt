@@ -18,7 +18,7 @@
   (예: NSMC 리뷰 20만 개 전체 = 말뭉치, 리뷰 1개 = 문서)
 
 형태소 : 뜻을 가진 가장 작은 말의 단위 (더 나누면 뜻이 사라짐)
-단어   : 혼자 쓰일 수 있는 말의 단위
+단어   : 혼자 쓰일 수 있는 말의 단위 (단, 학교 문법에서는 조사도 단어로 본다 — '꽃이' 는 단어 2개)
 - [고침] "사과" 는 더 나눌 수 없는 형태소 하나(명사)이자 단어. 불용어가 아니다 (뜻이 있는 핵심 단어)
   · 풋사과 = 풋(접두사) + 사과(명사),  책가방 = 책(명사) + 가방(명사)
 - 실질 형태소 : 실제 뜻 (명사, 동사·형용사 어간, 부사)   예) 꽃밭, 꽃, 피-, 많이
@@ -60,7 +60,7 @@ NLTK (텍스트 토큰화)                                   [고침] NLIK → N
 * 필수 사전 패키지
   nltk.download('punkt_tab')   # 문장 부호 규칙 (구버전 nltk 는 'punkt')
   nltk.download('stopwords')   # 불용어 목록
-  stopwords_list = nltk.corpus.stopwords.words('english')   # 영어 불용어 198개
+  stopwords_list = nltk.corpus.stopwords.words('english')   # 영어 불용어 198개 (NLTK 데이터 버전마다 다름)
 ===============================
 데이터 타입 : 리스트
 
@@ -112,7 +112,8 @@ WordPiece : BPE 와 비슷하지만 병합 기준이 "빈도" 가 아니라 점�
 - BertWordPieceTokenizer (tokenizers) : 말뭉치로 단어 사전(vocab.txt) 생성
 - BertTokenizerFast (transformers)    : vocab.txt 로 문장을 토큰 → id → BERT 입력([CLS] ... [SEP]) 으로
   · 주의 : 대소문자 옵션 이름은 lowercase 가 아니라 do_lower_case
-  · 주의 : strip_accents=False 를 빼면 한글이 자모로 분해되어 전부 [UNK]
+  · 주의 : 사전을 strip_accents=False(음절 단위)로 만들었는데 토큰화 때 빼면, 한글이 자모로 분해되어 전부 [UNK]
+           학습 · 토큰화 둘 다 True 면 자모 단위 사전이 된다 (갔어요 → 가 + ##ᆻ어요, 교재 p.27 의 ##ᆻ다)
 
 단어 사전을 만들고 순서대로 토큰화해야(토큰 → id) 학습이 가능하다.
 
