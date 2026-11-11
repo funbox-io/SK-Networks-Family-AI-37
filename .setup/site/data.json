@@ -5,10 +5,10 @@
   "end": "2027-03-03",
   "totalHours": 960,
   "dailyHours": "주중 09:00 ~ 18:00 (1일 8시간)",
-  "generated": "2026-11-10",
+  "generated": "2026-11-11",
   "total": 120,
-  "done": 38,
-  "passed": 44,
+  "done": 39,
+  "passed": 45,
   "phases": [
     {
       "name": "프로그래밍과 데이터 기초",
@@ -1827,7 +1827,7 @@
       "phaseKey": "llm",
       "title": "",
       "tags": [],
-      "lecture": 0,
+      "lecture": 6,
       "review": 0,
       "exists": true
     },
