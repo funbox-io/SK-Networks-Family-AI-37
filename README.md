@@ -14,7 +14,7 @@
 
 ## 🕘 최근 기록
 
-- **Day 047** · [2026-11-13 (금)](days/2026-11-13/) — _(제목 작성 전)_
+- **Day 047** · [2026-11-13 (금)](days/2026-11-13/) — LLM 2일차 — LangChain 체인(LCEL 프롬프트 | LLM | 출력 파서) · 감성 분석 체인 · MessagesPlaceholder 챗봇 · 도구(Tavily 웹 검색) · create_agent AI 에이전트
 - **Day 046** · [2026-11-12 (목)](days/2026-11-12/) — LLM 1일차 — OpenAI API(Chat Completions · Responses 웹 검색 · 스트리밍) · 토큰과 요금 · 프롬프트 출력 형식 지정(JSON 모드) · 고객 리뷰 감성 분석
 - **Day 045** · [2026-11-11 (수)](days/2026-11-11/) — 자연어 처리 7일차 — SentenceTransformer(문장 임베딩 · 평균 풀링) · 문장 유사도 · 문장 임베딩 영화 추천 · 검색형 챗봇(ChatBotData)
 - **Day 044** · [2026-11-10 (화)](days/2026-11-10/) — 자연어 처리 6일차 — GPT · BERT(MLM · NSP) · 사전 학습 / 전이 학습 / 추론 · Hugging Face pipeline() · KLUE BERT 로 네이버 영화 리뷰 미세 조정 · 마켓컬리 리뷰
@@ -95,7 +95,7 @@
 | 044 | 11주 | [11-10 (화)](days/2026-11-10/) | 자연어 처리 6일차 — GPT · BERT(MLM · NSP) · 사전 학습 / 전이 학습 / 추론 · Hugging Face pipeline() · KLUE BERT 로 네이버 영화 리뷰 미세 조정 · 마켓컬리 리뷰 | 📄 12 | – |
 | 045 | 11주 | [11-11 (수)](days/2026-11-11/) | 자연어 처리 7일차 — SentenceTransformer(문장 임베딩 · 평균 풀링) · 문장 유사도 · 문장 임베딩 영화 추천 · 검색형 챗봇(ChatBotData) | 📄 13 | – |
 | 046 | 11주 | [11-12 (목)](days/2026-11-12/) | LLM 1일차 — OpenAI API(Chat Completions · Responses 웹 검색 · 스트리밍) · 토큰과 요금 · 프롬프트 출력 형식 지정(JSON 모드) · 고객 리뷰 감성 분석 | 📄 15 | – |
-| 047 | 11주 | [11-13 (금)](days/2026-11-13/) | _(작성 전)_ | 📄 14 | – |
+| 047 | 11주 | [11-13 (금)](days/2026-11-13/) | LLM 2일차 — LangChain 체인(LCEL 프롬프트 | LLM | 출력 파서) · 감성 분석 체인 · MessagesPlaceholder 챗봇 · 도구(Tavily 웹 검색) · create_agent AI 에이전트 | 📄 14 | – |
 | 048 | 12주 | 11-16 (월) |  |  |  |
 | 049 | 12주 | 11-17 (화) |  |  |  |
 | 050 | 12주 | 11-18 (수) |  |  |  |
