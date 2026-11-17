@@ -97,7 +97,7 @@
 | 046 | 11주 | [11-12 (목)](days/2026-11-12/) | LLM 1일차 — OpenAI API(Chat Completions · Responses 웹 검색 · 스트리밍) · 토큰과 요금 · 프롬프트 출력 형식 지정(JSON 모드) · 고객 리뷰 감성 분석 | 📄 15 | – |
 | 047 | 11주 | [11-13 (금)](days/2026-11-13/) | LLM 2일차 — LangChain 체인(LCEL 프롬프트 | LLM | 출력 파서) · 감성 분석 체인 · MessagesPlaceholder 챗봇 · 도구(Tavily 웹 검색) · create_agent AI 에이전트 | 📄 14 | – |
 | 048 | 12주 | [11-16 (월)](days/2026-11-16/) | LLM 3일차 — RAG(검색 증강 생성) 개념 · 생성형 AI 의 빛과 그림자 · TextLoader → Document · RecursiveCharacterTextSplitter · chunk_size 정하기 | 📄 11 | – |
-| 049 | 12주 | [11-17 (화)](days/2026-11-17/) | _(작성 전)_ | 📄 8 | – |
+| 049 | 12주 | [11-17 (화)](days/2026-11-17/) | _(작성 전)_ | 📄 13 | – |
 | 050 | 12주 | 11-18 (수) |  |  |  |
 | 051 | 12주 | 11-19 (목) |  |  |  |
 | 052 | 12주 | 11-20 (금) |  |  |  |
