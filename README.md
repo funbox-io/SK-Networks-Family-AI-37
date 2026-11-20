@@ -14,11 +14,11 @@
 
 ## 🕘 최근 기록
 
+- **Day 052** · [2026-11-20 (금)](days/2026-11-20/) — _(제목 작성 전)_
 - **Day 051** · [2026-11-19 (목)](days/2026-11-19/) — LLM 6일차 — 서울시 상권 분석 멀티 에이전트 시나리오 · LangGraph 입문(노드 · 엣지 · 상태) · 타입 힌트 · TypedDict · add_messages 리듀서 · Pydantic BaseModel 상태
 - **Day 050** · [2026-11-18 (수)](days/2026-11-18/) — LLM 5일차 — ChromaDB 메타데이터 필터 연산자 · FAISS vs ChromaDB · CSVLoader · BM25 희소 검색 · MeCab 토큰화 · 하이브리드 검색 · RRF(EnsembleRetriever)
 - **Day 049** · [2026-11-17 (화)](days/2026-11-17/) — LLM 4일차 — RAG 완성 · 임베딩 · 벡터 저장소(Chroma · FAISS) · 검색 도구 · RAG 체인 · 고객 응대 챗봇 · PDF 헌법 Q&A · 메타데이터 필터
 - **Day 048** · [2026-11-16 (월)](days/2026-11-16/) — LLM 3일차 — RAG(검색 증강 생성) 개념 · 생성형 AI 의 빛과 그림자 · TextLoader → Document · RecursiveCharacterTextSplitter · chunk_size 정하기
-- **Day 047** · [2026-11-13 (금)](days/2026-11-13/) — LLM 2일차 — LangChain 체인(LCEL 프롬프트 | LLM | 출력 파서) · 감성 분석 체인 · MessagesPlaceholder 챗봇 · 도구(Tavily 웹 검색) · create_agent AI 에이전트
 
 ---
 
@@ -100,7 +100,7 @@
 | 049 | 12주 | [11-17 (화)](days/2026-11-17/) | LLM 4일차 — RAG 완성 · 임베딩 · 벡터 저장소(Chroma · FAISS) · 검색 도구 · RAG 체인 · 고객 응대 챗봇 · PDF 헌법 Q&A · 메타데이터 필터 | 📄 13 | – |
 | 050 | 12주 | [11-18 (수)](days/2026-11-18/) | LLM 5일차 — ChromaDB 메타데이터 필터 연산자 · FAISS vs ChromaDB · CSVLoader · BM25 희소 검색 · MeCab 토큰화 · 하이브리드 검색 · RRF(EnsembleRetriever) | 📄 16 | – |
 | 051 | 12주 | [11-19 (목)](days/2026-11-19/) | LLM 6일차 — 서울시 상권 분석 멀티 에이전트 시나리오 · LangGraph 입문(노드 · 엣지 · 상태) · 타입 힌트 · TypedDict · add_messages 리듀서 · Pydantic BaseModel 상태 | 📄 10 | – |
-| 052 | 12주 | 11-20 (금) |  |  |  |
+| 052 | 12주 | [11-20 (금)](days/2026-11-20/) | _(작성 전)_ | – | – |
 | 053 | 13주 | 11-23 (월) |  |  |  |
 | 054 | 13주 | 11-24 (화) |  |  |  |
 | 055 | 13주 | 11-25 (수) |  |  |  |
@@ -261,4 +261,4 @@ python3 .setup/scripts/build_index.py          # 진도표만 다시 만들기
 3. `days/<날짜>/README.md` 맨 위 `title:` 에 그날 주제를 한 줄 적습니다. → 진도표에 그대로 표시됩니다.
 4. push 하면 GitHub Actions 가 진도표와 웹사이트를 알아서 갱신합니다.
 
-<sub>이 문서는 <code>.setup/scripts/build_index.py</code> 가 자동으로 만듭니다. 직접 고치지 마세요. (마지막 갱신 2026-11-19)</sub>
+<sub>이 문서는 <code>.setup/scripts/build_index.py</code> 가 자동으로 만듭니다. 직접 고치지 마세요. (마지막 갱신 2026-11-20)</sub>
