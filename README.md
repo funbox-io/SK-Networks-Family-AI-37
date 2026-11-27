@@ -14,7 +14,7 @@
 
 ## 🕘 최근 기록
 
-- **Day 057** · [2026-11-27 (금)](days/2026-11-27/) — _(제목 작성 전)_
+- **Day 057** · [2026-11-27 (금)](days/2026-11-27/) — LLM 12일차 — PydanticAI Agent 로 LLM 출력 구조화(output_type · 검사 · 재시도) · 서울시 상권 분석 멀티 에이전트 1단계(CSV → MySQL 파이프라인) · 2단계(재구성 → NL2SQL → 실행 → 보고서)
 - **Day 056** · [2026-11-26 (목)](days/2026-11-26/) — _(제목 작성 전)_
 - **Day 055** · [2026-11-25 (수)](days/2026-11-25/) — LLM 10일차 — 체크포인팅(Checkpoint · Checkpointing · Checkpointer) · AsyncSqliteSaver · thread_id 대화 기억 · MySQL AIOMySQLSaver · 조건부 분기 + 비동기 + 체크포인팅 RAG 챗봇
 - **Day 054** · [2026-11-24 (화)](days/2026-11-24/) — LLM 9일차 — 비동기 처리(코루틴 · async / await · asyncio.run · gather) · 멀티 에이전트 RAG 챗봇을 비동기로(async def 노드 · await ainvoke · main) · 체크포인팅 예고
@@ -105,7 +105,7 @@
 | 054 | 13주 | [11-24 (화)](days/2026-11-24/) | LLM 9일차 — 비동기 처리(코루틴 · async / await · asyncio.run · gather) · 멀티 에이전트 RAG 챗봇을 비동기로(async def 노드 · await ainvoke · main) · 체크포인팅 예고 | 📄 12 | – |
 | 055 | 13주 | [11-25 (수)](days/2026-11-25/) | LLM 10일차 — 체크포인팅(Checkpoint · Checkpointing · Checkpointer) · AsyncSqliteSaver · thread_id 대화 기억 · MySQL AIOMySQLSaver · 조건부 분기 + 비동기 + 체크포인팅 RAG 챗봇 | 📄 17 | – |
 | 056 | 13주 | [11-26 (목)](days/2026-11-26/) | _(작성 전)_ | – | – |
-| 057 | 13주 | [11-27 (금)](days/2026-11-27/) | _(작성 전)_ | 📄 13 | – |
+| 057 | 13주 | [11-27 (금)](days/2026-11-27/) | LLM 12일차 — PydanticAI Agent 로 LLM 출력 구조화(output_type · 검사 · 재시도) · 서울시 상권 분석 멀티 에이전트 1단계(CSV → MySQL 파이프라인) · 2단계(재구성 → NL2SQL → 실행 → 보고서) | 📄 13 | – |
 | 058 | 14주 | 11-30 (월) |  |  |  |
 | 059 | 14주 | 12-01 (화) |  |  |  |
 | 060 | 14주 | 12-02 (수) |  |  |  |
